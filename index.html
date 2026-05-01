@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sidequest | Real World RPG Marketplace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-slate-50">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Icons Component Wrapper
+        const Icon = ({ name, className = "w-5 h-5" }) => {
+            useEffect(() => {
+                lucide.createIcons();
+            }, [name]);
+            return <i data-lucide={name} className={className}></i>;
+        };
+
+        const CURRENT_USER = {
+            name: 'Michael',
+            avatar: 'https://ui-avatars.com/api/?name=Michael&background=6366f1&color=fff',
+            rating: 4.9,
+            reviews: 12
+        };
+
+        const INITIAL_QUESTS = [
+            { 
+                id: 1, title: 'Walk my Golden Retriever', description: 'Need someone to walk my dog Buster for an hour this afternoon around the neighborhood.', reward: 30, category: 'Errands', type: 'Local', status: 'open', 
+                postedBy: { name: 'Alex J.', avatar: 'https://ui-avatars.com/api/?name=Alex+J&background=random', rating: 4.8, reviews: 34 },
+                timeline: { type: 'scheduled', text: 'Today at 4:00 PM' }
+            },
+            { 
+                id: 2, title: 'Clean up yard debris', description: 'Have some branches and leaves from the recent storm that need bagging and removal.', reward: 100, category: 'Labor', type: 'Local', status: 'open', 
+                postedBy: { name: 'Sarah M.', avatar: 'https://ui-avatars.com/api/?name=Sarah+M&background=random', rating: 5.0, reviews: 8 },
+                timeline: { type: 'deadline', text: 'By Sunday evening' }
+            },
+            { 
+                id: 4, title: 'Fix CSS bug on my website', description: 'My navigation bar is broken on mobile. Need a quick React/Tailwind fix.', reward: 50, category: 'Digital', type: 'Remote', status: 'open', 
+                postedBy: { name: 'TechStartup Inc.', avatar: 'https://ui-avatars.com/api/?name=Tech+Inc&background=000&color=fff', rating: 4.9, reviews: 56 },
+                timeline: { type: 'immediate', text: 'ASAP' }
+            }
+        ];
+
+        const CATEGORIES = ['All', 'Labor', 'Errands', 'Digital', 'Services', 'Items'];
+
+        function App() {
+            const [quests, setQuests] = useState(INITIAL_QUESTS);
+            const [activeCategory, setActiveCategory] = useState('All');
+            const [searchQuery, setSearchQuery] = useState('');
+            const [isModalOpen, setIsModalOpen] = useState(false);
+            const [activeChat, setActiveChat] = useState(null);
+
+            const filteredQuests = quests.filter(quest => {
+                const matchesCategory = activeCategory === 'All' || quest.category === activeCategory;
+                const matchesSearch = quest.title.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesCategory && matchesSearch;
+            });
+
+            return (
+                <div className="min-h-screen">
+                    <nav className="bg-white border-b border-slate-200 sticky top-0 z-10 px-4 h-16 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <div className="bg-indigo-600 p-1.5 rounded-lg text-white">
+                                <Icon name="coins" />
+                            </div>
+                            <span className="text-xl font-bold tracking-tight">Sidequest</span>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <button onClick={() => setIsModalOpen(true)} className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2">
+                                <Icon name="plus" />
+                                <span className="hidden sm:inline">Post Quest</span>
+                            </button>
+                        </div>
+                    </nav>
+
+                    <main className="max-w-6xl mx-auto px-4 pt-8">
+                        <div className="text-center mb-8">
+                            <h1 className="text-3xl font-extrabold mb-2 text-slate-900">Real Life Sidequests</h1>
+                            <p className="text-slate-500">Post what you need. Accept what you can.</p>
+                        </div>
+
+                        <div className="relative mb-6">
+                            <div className="absolute inset-y-0 left-3 flex items-center text-slate-400">
+                                <Icon name="search" className="w-4 h-4" />
+                            </div>
+                            <input 
+                                type="text" 
+                                placeholder="Search for quests..." 
+                                className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="flex gap-2 mb-8 overflow-x-auto hide-scrollbar">
+                            {CATEGORIES.map(c => (
+                                <button 
+                                    key={c}
+                                    onClick={() => setActiveCategory(c)}
+                                    className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap ${activeCategory === c ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 border border-slate-200'}`}
+                                >{c}</button>
+                            ))}
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {filteredQuests.map(quest => (
+                                <div key={quest.id} className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col shadow-sm">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded uppercase tracking-wider">{quest.category}</span>
+                                        <span className="text-xl font-bold text-emerald-600">${quest.reward}</span>
+                                    </div>
+                                    <h3 className="text-lg font-bold mb-2">{quest.title}</h3>
+                                    <p className="text-slate-600 text-sm mb-6 flex-grow">{quest.description}</p>
+                                    <div className="space-y-3 mb-6">
+                                        <div className="flex items-center gap-2 text-slate-500 text-xs font-medium">
+                                            <Icon name="clock" className="w-3.5 h-3.5" /> {quest.timeline.text}
+                                        </div>
+                                        <div className="flex items-center gap-3 pt-3 border-t border-slate-50">
+                                            <img src={quest.postedBy.avatar} className="w-8 h-8 rounded-full" />
+                                            <div>
+                                                <div className="text-sm font-bold leading-none">{quest.postedBy.name}</div>
+                                                <div className="flex items-center text-amber-500 text-[10px] mt-1 font-bold">
+                                                    <Icon name="star" className="w-2.5 h-2.5 fill-current mr-0.5" /> {quest.postedBy.rating} ({quest.postedBy.reviews})
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button 
+                                        onClick={() => setActiveChat(quest)}
+                                        className="w-full bg-slate-900 text-white font-bold py-3 rounded-xl hover:bg-slate-800 transition-all"
+                                    >Accept Quest</button>
+                                </div>
+                            ))}
+                        </div>
+                    </main>
+
+                    {/* Chat Modal */}
+                    {activeChat && (
+                        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/50 backdrop-blur-sm p-0 sm:p-4">
+                            <div className="bg-white w-full sm:w-[450px] h-[80vh] sm:h-[600px] flex flex-col rounded-t-2xl sm:rounded-2xl shadow-2xl">
+                                <div className="p-4 border-b flex justify-between items-center">
+                                    <div className="flex items-center gap-3">
+                                        <img src={activeChat.postedBy.avatar} className="w-10 h-10 rounded-full" />
+                                        <h4 className="font-bold">{activeChat.postedBy.name}</h4>
+                                    </div>
+                                    <button onClick={() => setActiveChat(null)} className="p-2 bg-slate-100 rounded-full"><Icon name="x" /></button>
+                                </div>
+                                <div className="flex-grow p-4 space-y-4 overflow-y-auto">
+                                    <div className="text-center"><span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-1 rounded-full uppercase font-bold tracking-widest">You accepted this quest</span></div>
+                                    <div className="bg-slate-100 p-3 rounded-2xl rounded-bl-none text-sm max-w-[80%] font-medium">Hey! Thanks for accepting my quest. When are you free to chat about details?</div>
+                                </div>
+                                <div className="p-4 border-t flex gap-2">
+                                    <input type="text" placeholder="Type a message..." className="flex-grow bg-slate-100 rounded-full px-4 py-2 outline-none border-2 border-transparent focus:border-indigo-500" />
+                                    <button className="bg-indigo-600 text-white p-2 rounded-full"><Icon name="send" /></button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
