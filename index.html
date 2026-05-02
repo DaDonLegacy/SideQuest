@@ -9,188 +9,185 @@
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; overflow-x: hidden; }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; }
         .card-shadow { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05); }
+        .lightning-glow { filter: drop-shadow(0 0 8px #6366f1); }
+        .centered-content { display: flex; flex-direction: column; align-items: center; text-align: center; }
         
-        /* RESTORED: Your Custom Dice Shake Animation */
-        .dice-shake:active { animation: shake 0.5s; }
-        @keyframes shake {
-            0% { transform: rotate(0deg); }
-            25% { transform: rotate(15deg); }
-            50% { transform: rotate(-15deg); }
-            75% { transform: rotate(15deg); }
-            100% { transform: rotate(0deg); }
+        /* Dice & Lightning Animations */
+        @keyframes bolt {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; transform: scale(1.1); }
         }
+        .bolt-active { animation: bolt 0.2s ease-in-out; }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
     <script type="text/babel">
-        // RESTORED: Exact Ohio Supabase Credentials
         const { createClient } = supabase;
         const supabaseUrl = 'https://rmajagnleibmlmcktpae.supabase.co';
         const supabaseKey = 'sb_publishable_egu0MKgcW8jm0IpG9PQbgQ_5ClCWNNf';
         const _supabase = createClient(supabaseUrl, supabaseKey);
 
         const App = () => {
-            const [quests, setQuests] = React.useState([]);
+            const [tasks, setTasks] = React.useState([]);
             const [loading, setLoading] = React.useState(true);
             const [isModalOpen, setIsModalOpen] = React.useState(false);
-            const [activeTab, setActiveTab] = React.useState('Explore');
+            const [user, setUser] = React.useState(null);
             
             const [formData, setFormData] = React.useState({
-                title: '',
-                description: '',
-                reward: '',
-                category: 'General',
-                address: ''
+                title: '', description: '', reward: '', category: 'General', address: ''
             });
 
-            // Connect to your 'tasks' table
-            const fetchQuests = async () => {
+            // 1. Supabase Auth & Profile Logic
+            React.useEffect(() => {
+                _supabase.auth.getSession().then(({ data: { session } }) => {
+                    setUser(session?.user ?? null);
+                });
+                fetchTasks();
+            }, []);
+
+            // 2. Database Fetching (Tasks, not Quests)
+            const fetchTasks = async () => {
                 setLoading(true);
                 const { data, error } = await _supabase
                     .from('tasks')
-                    .select('*')
-                    .eq('status', 'Open')
+                    .select('*, reviews(*)')
                     .order('created_at', { ascending: false });
-
-                if (error) console.error("Database Error:", error.message);
-                else setQuests(data || []);
+                if (!error) setTasks(data || []);
                 setLoading(false);
             };
 
-            React.useEffect(() => { fetchQuests(); }, []);
-
-            const handleSubmit = async (e) => {
+            // 3. Post Task Logic
+            const handlePostTask = async (e) => {
                 e.preventDefault();
-                const { error } = await _supabase
-                    .from('tasks')
-                    .insert([{
-                        title: formData.title,
-                        description: formData.description,
-                        reward: parseInt(formData.reward),
-                        category: formData.category,
-                        address: formData.address,
-                        status: 'Open'
-                    }]);
-
-                if (error) alert("Submission Failed: " + error.message);
-                else {
+                const { error } = await _supabase.from('tasks').insert([{
+                    ...formData, 
+                    reward: parseInt(formData.reward),
+                    status: 'Open',
+                    user_id: user?.id 
+                }]);
+                if (!error) {
                     setFormData({ title: '', description: '', reward: '', category: 'General', address: '' });
                     setIsModalOpen(false);
-                    fetchQuests(); 
+                    fetchTasks();
                 }
             };
 
             return (
                 <div className="min-h-screen pb-24">
-                    {/* RESTORED: Your Premium Logo & Sign Up UI */}
-                    <nav className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-6 py-4">
-                        <div className="max-w-5xl mx-auto flex justify-between items-center">
-                            <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200">
-                                    <span className="text-2xl font-black">S</span>
+                    {/* RESTORED: Centered Header with Lightning Logo */}
+                    <nav className="bg-white border-b border-slate-200 py-6">
+                        <div className="max-w-5xl mx-auto px-6 flex flex-col items-center gap-6">
+                            <div className="flex flex-col items-center">
+                                <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-2xl relative mb-2">
+                                    <span className="text-3xl font-black relative z-10">S</span>
+                                    {/* Lightning Strike Overlay */}
+                                    <svg className="absolute w-12 h-12 text-yellow-400 lightning-glow" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                                    </svg>
                                 </div>
-                                <div>
-                                    <h1 className="text-xl font-black text-slate-900 tracking-tight leading-none">SideQuest</h1>
-                                    <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Premium Marketplace</span>
-                                </div>
+                                <h1 className="text-3xl font-black text-slate-900 tracking-tight">SideQuest</h1>
+                                <p className="text-[10px] font-extrabold text-indigo-600 uppercase tracking-[0.3em]">Premium Marketplace</p>
                             </div>
-                            <div className="flex items-center gap-4">
-                                <button className="text-slate-500 font-bold text-sm hover:text-slate-900 transition-colors">Log In</button>
-                                <button className="bg-slate-900 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-xl shadow-slate-200 active:scale-95 transition-all">Sign Up</button>
+
+                            {/* Centered Search Bar */}
+                            <div className="w-full max-w-2xl relative">
+                                <input 
+                                    type="text" 
+                                    placeholder="Search for Tasks in Riverview..." 
+                                    className="w-full bg-slate-100 border-none rounded-2xl px-6 py-4 font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none"
+                                />
+                                <button className="absolute right-4 top-4 text-slate-400 font-bold">Search</button>
+                            </div>
+
+                            <div className="flex gap-4">
+                                <button className="text-slate-500 font-black text-sm uppercase tracking-widest hover:text-indigo-600 transition-colors">Log In</button>
+                                <button className="bg-slate-900 text-white px-8 py-3 rounded-xl font-black text-sm uppercase tracking-widest shadow-xl active:scale-95 transition-all">Sign Up</button>
                             </div>
                         </div>
                     </nav>
 
-                    <main className="max-w-5xl mx-auto px-6 pt-8">
-                        <div className="flex justify-between items-end mb-8">
-                            <div>
-                                <h2 className="text-4xl font-black text-slate-900 mb-2 font-display tracking-tight">Quest Board</h2>
-                                <p className="text-slate-500 font-bold flex items-center gap-2">
-                                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                                    Active in Riverview, NB
-                                </p>
-                            </div>
-                            <button 
-                                onClick={() => setIsModalOpen(true)}
-                                className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3.5 rounded-2xl font-black shadow-xl shadow-indigo-100 transition-all hover:-translate-y-1 active:translate-y-0"
-                            >
-                                + Post a Quest
-                            </button>
-                        </div>
+                    <main className="max-w-5xl mx-auto px-6 pt-12 centered-content">
+                        <h2 className="text-5xl font-black text-slate-900 mb-4 tracking-tighter">Task Board</h2>
+                        <p className="text-slate-400 font-bold mb-12 uppercase tracking-widest text-xs flex items-center gap-2">
+                            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                            Live Updates in Riverview, NB
+                        </p>
 
-                        {/* RESTORED: Your Horizontal Navigation Tabs */}
-                        <div className="flex gap-2 mb-8 overflow-x-auto pb-2 hide-scrollbar">
-                            {['Explore', 'My Quests', 'Saved', 'Nearby'].map(tab => (
-                                <button 
-                                    key={tab}
-                                    onClick={() => setActiveTab(tab)}
-                                    className={`px-6 py-2.5 rounded-xl font-bold text-sm whitespace-nowrap transition-all ${activeTab === tab ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-white text-slate-500 hover:bg-slate-50 border border-slate-100'}`}
-                                >
-                                    {tab}
-                                </button>
-                            ))}
-                        </div>
+                        <button 
+                            onClick={() => setIsModalOpen(true)}
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-5 rounded-2xl font-black text-xl shadow-2xl shadow-indigo-200 transition-all hover:-translate-y-1 mb-16"
+                        >
+                            + Post Task
+                        </button>
 
-                        {loading ? (
-                            <div className="py-20 text-center font-bold text-slate-400">Syncing with Ohio database...</div>
-                        ) : (
-                            <div className="grid gap-6 md:grid-cols-2">
-                                {quests.map((quest) => (
-                                    <div key={quest.id} className="bg-white p-8 rounded-[2rem] border border-slate-100 card-shadow group transition-all hover:border-indigo-100">
-                                        <div className="flex justify-between items-start mb-6">
-                                            <div className="px-4 py-1.5 bg-indigo-50 text-indigo-700 rounded-full text-[10px] font-black uppercase tracking-wider">
-                                                {quest.category}
-                                            </div>
-                                            <div className="text-4xl font-black text-slate-900 leading-none tracking-tighter">
-                                                <span className="text-green-500 text-lg mr-0.5">$</span>{quest.reward}
-                                            </div>
-                                        </div>
-                                        <h3 className="text-2xl font-black text-slate-900 mb-3 group-hover:text-indigo-600 transition-colors leading-tight">{quest.title}</h3>
-                                        <p className="text-slate-500 font-bold leading-relaxed mb-8">{quest.description}</p>
-                                        <div className="flex items-center justify-between pt-6 border-t border-slate-50">
-                                            <div className="flex items-center gap-2 text-slate-400 font-bold text-xs uppercase tracking-widest">
-                                                <span>📍 {quest.address}</span>
-                                            </div>
-                                            <button className="bg-slate-900 text-white px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-indigo-600 transition-colors">Accept Quest</button>
+                        {/* Centered Task Grid */}
+                        <div className="grid gap-8 w-full md:grid-cols-2 text-left">
+                            {tasks.map((task) => (
+                                <div key={task.id} className="bg-white p-10 rounded-[3rem] border border-slate-100 card-shadow relative overflow-hidden group">
+                                    <div className="flex justify-between items-start mb-8">
+                                        <span className="px-5 py-2 bg-indigo-50 text-indigo-700 rounded-full text-xs font-black uppercase tracking-tighter">
+                                            {task.category}
+                                        </span>
+                                        <div className="text-5xl font-black text-slate-900 leading-none tracking-tighter">
+                                            <span className="text-green-500 text-xl mr-1">$</span>{task.reward}
                                         </div>
                                     </div>
-                                ))}
-                            </div>
-                        )}
+                                    
+                                    <h3 className="text-3xl font-black text-slate-900 mb-4 group-hover:text-indigo-600 transition-colors">{task.title}</h3>
+                                    <p className="text-slate-500 font-bold leading-relaxed mb-8">{task.description}</p>
+                                    
+                                    {/* RESTORED: Review System Snippet */}
+                                    <div className="flex items-center gap-1 mb-8">
+                                        {[1,2,3,4,5].map(star => (
+                                            <span key={star} className="text-yellow-400 text-lg">★</span>
+                                        ))}
+                                        <span className="text-slate-400 font-bold text-xs ml-2">(4.9 User Rating)</span>
+                                    </div>
+
+                                    <div className="flex items-center justify-between pt-8 border-t border-slate-50">
+                                        <div className="text-slate-400 font-black text-[10px] uppercase tracking-widest">
+                                            📍 {task.address}
+                                        </div>
+                                        <button className="bg-slate-900 text-white px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-indigo-600 transition-colors shadow-lg shadow-slate-200">
+                                            Accept Task
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </main>
 
-                    {/* RESTORED: Your Custom Curved Modal Design */}
+                    {/* RESTORED: Centered Task Modal */}
                     {isModalOpen && (
-                        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                            <div className="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl p-10 relative overflow-hidden">
-                                <h3 className="text-3xl font-black text-slate-900 mb-2">Create Quest</h3>
-                                <p className="text-slate-500 font-bold mb-8 text-sm">Post a task for your Riverview community.</p>
-                                <form onSubmit={handleSubmit} className="space-y-5">
-                                    <input required className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-bold placeholder:text-slate-300 focus:ring-2 focus:ring-indigo-500 transition-all outline-none" placeholder="Title" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+                        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+                            <div className="bg-white w-full max-w-xl rounded-[3rem] shadow-2xl p-12 relative text-center">
+                                <h3 className="text-4xl font-black text-slate-900 mb-2 tracking-tighter">Post New Task</h3>
+                                <p className="text-slate-400 font-bold mb-10 text-sm">Help your community. Grow your rep.</p>
+                                
+                                <form onSubmit={handlePostTask} className="space-y-6">
+                                    <input required className="w-full bg-slate-100 border-none rounded-2xl px-6 py-5 font-bold outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Task Title" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+                                    
                                     <div className="grid grid-cols-2 gap-4">
-                                        <input required type="number" className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-bold placeholder:text-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Reward ($)" value={formData.reward} onChange={(e) => setFormData({...formData, reward: e.target.value})} />
-                                        <select className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-bold text-slate-500 outline-none" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
+                                        <input required type="number" className="w-full bg-slate-100 border-none rounded-2xl px-6 py-5 font-bold outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Reward ($)" value={formData.reward} onChange={(e) => setFormData({...formData, reward: e.target.value})} />
+                                        <select className="w-full bg-slate-100 border-none rounded-2xl px-6 py-5 font-bold text-slate-500 outline-none" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
                                             <option>General</option><option>Labor</option><option>Tech</option><option>Delivery</option>
                                         </select>
                                     </div>
-                                    <input required className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-bold placeholder:text-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Address" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} />
-                                    <textarea required className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-bold placeholder:text-slate-300 h-32 focus:ring-2 focus:ring-indigo-500 outline-none resize-none" placeholder="Details..." value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})}></textarea>
-                                    <div className="flex gap-3 pt-4">
-                                        <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 bg-slate-100 text-slate-500 py-4 rounded-2xl font-black">Cancel</button>
-                                        <button type="submit" className="flex-[2] bg-indigo-600 text-white py-4 rounded-2xl font-black shadow-lg shadow-indigo-100">Launch Quest</button>
+
+                                    <input required className="w-full bg-slate-100 border-none rounded-2xl px-6 py-5 font-bold outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Address in Riverview" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} />
+                                    <textarea required className="w-full bg-slate-100 border-none rounded-2xl px-6 py-5 font-bold h-40 outline-none resize-none focus:ring-2 focus:ring-indigo-500" placeholder="What needs to be done?" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})}></textarea>
+                                    
+                                    <div className="flex gap-4 pt-6">
+                                        <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 bg-slate-200 text-slate-600 py-5 rounded-2xl font-black uppercase tracking-widest">Cancel</button>
+                                        <button type="submit" className="flex-[2] bg-indigo-600 text-white py-5 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-indigo-100">Post Task</button>
                                     </div>
                                 </form>
                             </div>
