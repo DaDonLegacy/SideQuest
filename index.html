@@ -43,24 +43,25 @@
             const [isPostModalOpen, setIsPostModalOpen] = useState(false);
             const [authMode, setAuthMode] = useState(null); 
             const [activeChat, setActiveChat] = useState(null);
-            const [reviewingTask, setReviewingTask] = useState(null);
 
             // Dice roll logic
             const rollDice = () => {
                 const openTasks = tasks.filter(t => t.status === 'Open');
-                if (openTasks.length === 0) {
-                    alert("No active tasks found. Try posting one!");
-                    return;
-                }
+                if (openTasks.length === 0) return alert("No active tasks found!");
                 const randomTask = openTasks[Math.floor(Math.random() * openTasks.length)];
-                setSearchQuery(randomTask.title); // Focus the view on that task
+                setActiveCategory('All');
+                setSearchQuery(randomTask.title);
             };
 
-            const handleAuth = (e) => {
+            const handleAuthSubmit = (e) => {
                 e.preventDefault();
                 const formData = new FormData(e.target);
+                
+                // For Sign Up: Create full profile
+                // For Login: Simulate entry with existing credentials
                 const newUser = {
                     name: formData.get('name') || "Michael L.",
+                    username: formData.get('username') || formData.get('email')?.split('@')[0],
                     email: formData.get('email'),
                     phone: formData.get('phone') || "(506) 588-8388",
                     location: formData.get('location') || "Riverview, NB",
@@ -93,20 +94,8 @@
                 setIsPostModalOpen(false);
             };
 
-            const handleReviewSubmit = (newRating) => {
-                const totalReviews = user.reviewCount + 1;
-                const updatedAverage = ((user.rating * user.reviewCount) + newRating) / totalReviews;
-                setUser(prev => ({
-                    ...prev,
-                    rating: Number(updatedAverage.toFixed(1)),
-                    reviewCount: totalReviews
-                }));
-                setReviewingTask(null);
-            };
-
-            // Rating Badge Helper
             const RatingBadge = ({ rating, count }) => {
-                if (count < 3) return <span className="text-slate-400">New User, Review Pending</span>;
+                if (count < 3) return <span className="text-slate-400">Review Pending</span>;
                 const colorClass = rating >= 4.0 ? 'text-emerald-500' : 'text-amber-500';
                 return <span className={colorClass}>{rating} Stars ({count})</span>;
             };
@@ -171,24 +160,14 @@
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                 />
                             </div>
-                            
-                            {/* THE DICE BUTTON */}
-                            <button 
-                                onClick={rollDice}
-                                title="Roll for a random task"
-                                className="bg-white border-2 border-slate-100 p-5 rounded-[2rem] text-indigo-600 hover:border-indigo-600 hover:shadow-lg transition-all dice-shake"
-                            >
+                            <button onClick={rollDice} className="bg-white border-2 border-slate-100 p-5 rounded-[2rem] text-indigo-600 hover:border-indigo-600 hover:shadow-lg transition-all dice-shake">
                                 <Icon name="dices" className="w-8 h-8" />
                             </button>
                         </div>
 
                         <div className="flex justify-center items-center gap-3 overflow-x-auto hide-scrollbar px-4 max-w-2xl mx-auto">
                             {['All', 'Labor', 'Errands', 'Digital', 'Creative'].map(c => (
-                                <button 
-                                    key={c}
-                                    onClick={() => setActiveCategory(c)}
-                                    className={`px-8 py-3.5 rounded-full text-[12px] font-black uppercase tracking-widest transition-all whitespace-nowrap shadow-sm border ${activeCategory === c ? 'bg-indigo-600 text-white border-indigo-600 shadow-indigo-100' : 'bg-white text-slate-400 border-slate-100 hover:border-indigo-200 hover:text-slate-600'}`}
-                                >{c}</button>
+                                <button key={c} onClick={() => setActiveCategory(c)} className={`px-8 py-3.5 rounded-full text-[12px] font-black uppercase tracking-widest transition-all whitespace-nowrap shadow-sm border ${activeCategory === c ? 'bg-indigo-600 text-white border-indigo-600 shadow-indigo-100' : 'bg-white text-slate-400 border-slate-100 hover:border-indigo-200 hover:text-slate-600'}`}>{c}</button>
                             ))}
                         </div>
                     </div>
@@ -203,94 +182,92 @@
                                 </div>
                                 <h3 className="text-2xl font-black mb-4 text-slate-800 tracking-tight leading-tight">{task.title}</h3>
                                 <p className="text-slate-400 text-sm mb-10 leading-relaxed font-medium line-clamp-2 italic">"{task.description}"</p>
-                                
                                 <div className="mt-auto flex items-center justify-between pt-8 border-t border-slate-50 mb-8">
                                     <div className="flex items-center gap-3 font-bold text-[10px] uppercase tracking-tighter">
                                         <img src={task.avatar} className="w-12 h-12 rounded-full border-4 border-white shadow-md" />
-                                        <div>
-                                            <p className="text-slate-900">{task.postedBy}</p>
-                                            <p><RatingBadge rating={task.posterRating} count={task.posterReviews} /></p>
-                                        </div>
+                                        <div><p className="text-slate-900">{task.postedBy}</p><p><RatingBadge rating={task.posterRating} count={task.posterReviews} /></p></div>
                                     </div>
                                 </div>
-
-                                {task.status === 'Open' ? (
-                                    <button onClick={() => {
-                                        if(!user) return setAuthMode('login');
-                                        setTasks(tasks.map(t => t.id === task.id ? {...t, status: 'Pending'} : t));
-                                        setActiveChat(task);
-                                    }} className="w-full bg-slate-900 text-white font-black py-6 rounded-[2.5rem] hover:bg-indigo-600 transition-all shadow-xl shadow-slate-100 uppercase text-xs tracking-widest">Accept Task</button>
-                                ) : (
-                                    <button disabled className="w-full bg-slate-50 text-slate-300 font-black py-6 rounded-[2.5rem] uppercase text-[10px] tracking-widest italic">Task Accepted</button>
-                                )}
+                                <button onClick={() => { if(!user) return setAuthMode('login'); setActiveChat(task); }} className="w-full bg-slate-900 text-white font-black py-6 rounded-[2.5rem] hover:bg-indigo-600 transition-all shadow-xl uppercase text-xs tracking-widest">Accept Task</button>
                             </div>
                         )) : (
-                            <div className="col-span-full py-48 text-center">
-                                <Icon name="package-open" className="w-12 h-12 text-slate-200 mx-auto mb-8" />
-                                <h2 className="text-3xl font-black text-slate-300 uppercase tracking-tighter">No current tasks</h2>
-                                <p className="text-slate-400 font-medium italic">Everything is handled in your area.</p>
+                            <div className="col-span-full py-48 text-center text-slate-300">
+                                <Icon name="package-open" className="w-12 h-12 mx-auto mb-8" />
+                                <h2 className="text-3xl font-black uppercase tracking-tighter">No tasks found</h2>
                             </div>
                         )}
                     </main>
 
-                    {/* MODALS */}
+                    {/* UPDATED AUTH MODAL */}
                     {authMode && (
                         <div className="fixed inset-0 z-[150] flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-6">
                             <div className="bg-white w-full max-w-lg rounded-[4rem] p-12 shadow-2xl relative overflow-y-auto max-h-[90vh]">
                                 <button onClick={() => setAuthMode(null)} className="absolute top-10 right-10 text-slate-200 hover:text-slate-900 transition-colors"><Icon name="x" /></button>
-                                <h2 className="text-4xl font-black mb-3 tracking-tight">{authMode === 'login' ? 'Login' : 'Join SideQuest'}</h2>
-                                <p className="text-slate-400 font-medium mb-10 italic">Start completing tasks today.</p>
-                                <form onSubmit={handleAuth} className="space-y-6">
-                                    {authMode === 'signup' && (
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase text-slate-300 ml-4">Display Name</label>
-                                            <input name="name" required placeholder="Name" className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600 transition-all" />
-                                        </div>
+                                <h2 className="text-4xl font-black mb-3 tracking-tight">{authMode === 'login' ? 'Welcome Back' : 'Join SideQuest'}</h2>
+                                <p className="text-slate-400 font-medium mb-10 italic">{authMode === 'login' ? 'Login with your credentials.' : 'Complete your professional profile.'}</p>
+                                
+                                <form onSubmit={handleAuthSubmit} className="space-y-6">
+                                    {authMode === 'signup' ? (
+                                        <React.Fragment>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase text-slate-300 ml-4">Full Name</label>
+                                                <input name="name" required placeholder="Michael L." className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600 transition-all" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase text-slate-300 ml-4">Phone Number</label>
+                                                <input name="phone" required placeholder="(506) --- ----" className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600 transition-all" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase text-slate-300 ml-4">Postal Code / City</label>
+                                                <input name="location" required placeholder="Riverview, NB" className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600 transition-all" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase text-slate-300 ml-4">Email Address</label>
+                                                <input name="email" type="email" required placeholder="mike@example.com" className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600 transition-all" />
+                                            </div>
+                                        </React.Fragment>
+                                    ) : (
+                                        <React.Fragment>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase text-slate-300 ml-4">Username or Email</label>
+                                                <input name="username" required placeholder="Username" className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600 transition-all" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase text-slate-300 ml-4">Password</label>
+                                                <input name="password" type="password" required placeholder="••••••••" className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600 transition-all" />
+                                            </div>
+                                        </React.Fragment>
                                     )}
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-slate-300 ml-4">Email</label>
-                                        <input name="email" type="email" required placeholder="email@address.com" className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600 transition-all" />
-                                    </div>
                                     <button type="submit" className="w-full bg-indigo-600 text-white font-black py-6 rounded-[2.5rem] shadow-xl shadow-indigo-100 mt-6 active:scale-95 transition-all uppercase text-xs tracking-widest">
-                                        {authMode === 'login' ? 'Enter' : 'Create Profile'}
+                                        {authMode === 'login' ? 'Sign In' : 'Finish Sign Up'}
                                     </button>
                                 </form>
+                                <div className="mt-8 text-center">
+                                    <button onClick={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')} className="text-[10px] font-black text-slate-300 uppercase tracking-widest hover:text-indigo-600 transition-all">
+                                        {authMode === 'login' ? "Need an account? Create one" : "Already a member? Log in"}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     )}
 
+                    {/* POST MODAL */}
                     {isPostModalOpen && (
                         <div className="fixed inset-0 z-[150] flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-6">
                             <div className="bg-white w-full max-w-lg rounded-[4rem] p-12 shadow-2xl relative overflow-y-auto max-h-[90vh]">
                                 <button onClick={() => setIsPostModalOpen(false)} className="absolute top-10 right-10 text-slate-200 hover:text-slate-900"><Icon name="x" /></button>
-                                <h2 className="text-4xl font-black mb-3 tracking-tight text-slate-900">Post Task</h2>
-                                <p className="text-slate-400 font-medium mb-10 italic">Detail what needs to be done.</p>
+                                <h2 className="text-4xl font-black mb-10 tracking-tight text-slate-900">Post Task</h2>
                                 <form onSubmit={handleCreateTask} className="space-y-6">
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-slate-300 ml-4">Title</label>
-                                        <input name="title" required placeholder="Task Title" className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-slate-300 ml-4">Street Address (Protected)</label>
-                                        <input name="address" required placeholder="123 Street Name" className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600" />
-                                    </div>
+                                    <input name="title" required placeholder="Task Title" className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600" />
+                                    <input name="address" required placeholder="Address (Hidden from Public)" className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600" />
                                     <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase text-slate-300 ml-4">Reward ($)</label>
-                                            <input name="reward" type="number" required placeholder="Price" className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600" />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase text-slate-300 ml-4">Category</label>
-                                            <select name="category" className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600 appearance-none">
-                                                <option>Labor</option><option>Errands</option><option>Digital</option><option>Creative</option>
-                                            </select>
-                                        </div>
+                                        <input name="reward" type="number" required placeholder="Reward ($)" className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600" />
+                                        <select name="category" className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600 appearance-none">
+                                            <option>Labor</option><option>Errands</option><option>Digital</option><option>Creative</option>
+                                        </select>
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-slate-300 ml-4">Description</label>
-                                        <textarea name="description" required rows="3" placeholder="Task details..." className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600 resize-none"></textarea>
-                                    </div>
-                                    <button type="submit" className="w-full bg-slate-900 text-white font-black py-7 rounded-[3rem] shadow-xl mt-4 active:scale-95 transition-all uppercase text-xs tracking-widest">Create Task</button>
+                                    <textarea name="description" required rows="3" placeholder="Description" className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600 resize-none"></textarea>
+                                    <button type="submit" className="w-full bg-slate-900 text-white font-black py-7 rounded-[3rem] shadow-xl mt-4 active:scale-95 transition-all uppercase text-xs tracking-widest">Post Task</button>
                                 </form>
                             </div>
                         </div>
