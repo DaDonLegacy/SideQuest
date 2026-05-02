@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sidequest | Premium Marketplace</title>
+    <title>SideQuest | Premium Marketplace</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -14,7 +14,14 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; overflow-x: hidden; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .card-shadow { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05); }
-        .suspended-blur { filter: blur(12px); pointer-events: none; }
+        .dice-shake:active { animation: shake 0.5s; }
+        @keyframes shake {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(15deg); }
+            50% { transform: rotate(-15deg); }
+            75% { transform: rotate(15deg); }
+            100% { transform: rotate(0deg); }
+        }
     </style>
 </head>
 <body>
@@ -38,6 +45,17 @@
             const [activeChat, setActiveChat] = useState(null);
             const [reviewingTask, setReviewingTask] = useState(null);
 
+            // Dice roll logic
+            const rollDice = () => {
+                const openTasks = tasks.filter(t => t.status === 'Open');
+                if (openTasks.length === 0) {
+                    alert("No active tasks found. Try posting one!");
+                    return;
+                }
+                const randomTask = openTasks[Math.floor(Math.random() * openTasks.length)];
+                setSearchQuery(randomTask.title); // Focus the view on that task
+            };
+
             const handleAuth = (e) => {
                 e.preventDefault();
                 const formData = new FormData(e.target);
@@ -47,7 +65,7 @@
                     phone: formData.get('phone') || "(506) 588-8388",
                     location: formData.get('location') || "Riverview, NB",
                     avatar: `https://ui-avatars.com/api/?name=${formData.get('name') || 'ML'}&background=6366f1&color=fff`,
-                    rating: 5.0,
+                    rating: 0,
                     reviewCount: 0,
                     status: 'active'
                 };
@@ -67,7 +85,9 @@
                     address: formData.get('address'), 
                     status: 'Open',
                     postedBy: user.name,
-                    avatar: user.avatar
+                    avatar: user.avatar,
+                    posterRating: user.rating,
+                    posterReviews: user.reviewCount
                 };
                 setTasks([newTask, ...tasks]);
                 setIsPostModalOpen(false);
@@ -76,15 +96,19 @@
             const handleReviewSubmit = (newRating) => {
                 const totalReviews = user.reviewCount + 1;
                 const updatedAverage = ((user.rating * user.reviewCount) + newRating) / totalReviews;
-                const isSuspended = updatedAverage < 2.5;
-
                 setUser(prev => ({
                     ...prev,
                     rating: Number(updatedAverage.toFixed(1)),
-                    reviewCount: totalReviews,
-                    status: isSuspended ? 'suspended' : 'active'
+                    reviewCount: totalReviews
                 }));
                 setReviewingTask(null);
+            };
+
+            // Rating Badge Helper
+            const RatingBadge = ({ rating, count }) => {
+                if (count < 3) return <span className="text-slate-400">New User, Review Pending</span>;
+                const colorClass = rating >= 4.0 ? 'text-emerald-500' : 'text-amber-500';
+                return <span className={colorClass}>{rating} Stars ({count})</span>;
             };
 
             const filteredTasks = useMemo(() => {
@@ -98,57 +122,44 @@
             return (
                 <div className="min-h-screen flex flex-col relative">
                     
-                    {/* SUSPENSION OVERLAY */}
-                    {user?.status === 'suspended' && (
-                        <div className="fixed inset-0 z-[200] bg-slate-900/95 backdrop-blur-xl flex items-center justify-center p-6 text-center">
-                            <div className="max-w-md bg-white rounded-[3rem] p-12 shadow-2xl">
-                                <div className="bg-red-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-red-600">
-                                    <Icon name="octagon-alert" className="w-10 h-10" />
-                                </div>
-                                <h2 className="text-3xl font-black text-slate-900 mb-4 tracking-tight">Account Restricted</h2>
-                                <p className="text-slate-500 font-medium mb-8 italic">Your account has been locked. High community standards must be maintained.</p>
-                                <button onClick={() => window.location.reload()} className="w-full bg-slate-900 text-white font-black py-5 rounded-2xl active:scale-95 transition-all">Contact Appeals</button>
+                    {/* NAVBAR */}
+                    <nav className="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200 px-6 h-20 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <div className="bg-indigo-600 p-2 rounded-xl text-white shadow-lg">
+                                <Icon name="zap" className="w-6 h-6" />
                             </div>
+                            <span className="text-2xl font-extrabold tracking-tighter text-slate-900 italic uppercase">SideQuest</span>
                         </div>
-                    )}
 
-                    <div className={user?.status === 'suspended' ? 'suspended-blur' : ''}>
-                        {/* NAVBAR */}
-                        <nav className="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200 px-6 h-20 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <div className="bg-indigo-600 p-2 rounded-xl text-white shadow-lg">
-                                    <Icon name="zap" className="w-6 h-6" />
+                        <div className="flex items-center gap-4">
+                            <button onClick={() => user ? setIsPostModalOpen(true) : setAuthMode('signup')} className="bg-slate-900 text-white px-6 py-3 rounded-2xl font-bold hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2">
+                                <Icon name="plus" className="w-4 h-4" /> <span className="hidden md:inline">Post Task</span>
+                            </button>
+                            {user ? (
+                                <div className="flex items-center gap-3 bg-white p-1.5 pr-4 rounded-full border border-slate-200">
+                                    <img src={user.avatar} className="w-8 h-8 rounded-full shadow-sm" />
+                                    <div className="hidden sm:block text-left">
+                                        <p className="font-bold text-[10px] text-slate-900 leading-none">{user.name}</p>
+                                        <p className="text-[9px] font-bold mt-1 uppercase tracking-tighter">
+                                            <RatingBadge rating={user.rating} count={user.reviewCount} />
+                                        </p>
+                                    </div>
                                 </div>
-                                <span className="text-2xl font-extrabold tracking-tighter text-slate-900 italic uppercase">Sidequest</span>
-                            </div>
+                            ) : (
+                                <div className="flex gap-2">
+                                    <button onClick={() => setAuthMode('login')} className="text-slate-600 px-4 py-3 font-bold hover:text-indigo-600 transition-colors uppercase text-[10px] tracking-widest">Log In</button>
+                                    <button onClick={() => setAuthMode('signup')} className="bg-indigo-50 text-indigo-600 px-6 py-3 rounded-2xl font-bold hover:bg-indigo-100 transition-all uppercase text-[10px] tracking-widest">Sign Up</button>
+                                </div>
+                            )}
+                        </div>
+                    </nav>
 
-                            <div className="flex items-center gap-4">
-                                <button onClick={() => user ? setIsPostModalOpen(true) : setAuthMode('signup')} className="bg-slate-900 text-white px-6 py-3 rounded-2xl font-bold hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2">
-                                    <Icon name="plus" className="w-4 h-4" /> <span className="hidden md:inline">Post Task</span>
-                                </button>
-                                {user ? (
-                                    <div className="flex items-center gap-3 bg-white p-1.5 pr-4 rounded-full border border-slate-200">
-                                        <img src={user.avatar} className="w-8 h-8 rounded-full shadow-sm" />
-                                        <div className="hidden sm:block text-left">
-                                            <p className="font-bold text-[10px] text-slate-900 leading-none">{user.name}</p>
-                                            <p className="text-[9px] font-bold text-indigo-600 mt-1 uppercase tracking-tighter">{user.rating} Stars</p>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="flex gap-2">
-                                        <button onClick={() => setAuthMode('login')} className="text-slate-600 px-4 py-3 font-bold hover:text-indigo-600 transition-colors">Log In</button>
-                                        <button onClick={() => setAuthMode('signup')} className="bg-indigo-50 text-indigo-600 px-6 py-3 rounded-2xl font-bold hover:bg-indigo-100 transition-all">Sign Up</button>
-                                    </div>
-                                )}
-                            </div>
-                        </nav>
-
-                        {/* HERO SECTION */}
-                        <div className="bg-white border-b border-slate-100 px-6 pt-20 pb-16 text-center">
-                            <h1 className="text-5xl md:text-7xl font-black text-slate-900 mb-8 tracking-tighter leading-tight">Your New <span className="text-indigo-600 italic">Side Hustle.</span></h1>
-                            
-                            {/* CENTERED SEARCH BAR */}
-                            <div className="max-w-2xl mx-auto relative group mb-12">
+                    {/* HERO & SEARCH */}
+                    <div className="bg-white border-b border-slate-100 px-6 pt-20 pb-16 text-center">
+                        <h1 className="text-5xl md:text-7xl font-black text-slate-900 mb-8 tracking-tighter leading-tight">Your New <span className="text-indigo-600 italic">SideQuest.</span></h1>
+                        
+                        <div className="max-w-2xl mx-auto relative group mb-12 flex items-center gap-4">
+                            <div className="relative flex-grow">
                                 <div className="absolute inset-y-0 left-6 flex items-center text-slate-300 group-focus-within:text-indigo-600 transition-colors">
                                     <Icon name="search" className="w-6 h-6" />
                                 </div>
@@ -160,114 +171,113 @@
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                 />
                             </div>
-
-                            {/* CENTERED FILTERS - ALIGNED WITH SEARCH */}
-                            <div className="flex justify-center items-center gap-3 overflow-x-auto hide-scrollbar px-4 max-w-2xl mx-auto">
-                                {['All', 'Labor', 'Errands', 'Digital', 'Creative'].map(c => (
-                                    <button 
-                                        key={c}
-                                        onClick={() => setActiveCategory(c)}
-                                        className={`px-8 py-3.5 rounded-full text-[12px] font-black uppercase tracking-widest transition-all whitespace-nowrap shadow-sm border ${activeCategory === c ? 'bg-indigo-600 text-white border-indigo-600 shadow-indigo-100' : 'bg-white text-slate-400 border-slate-100 hover:border-indigo-200 hover:text-slate-600'}`}
-                                    >{c}</button>
-                                ))}
-                            </div>
+                            
+                            {/* THE DICE BUTTON */}
+                            <button 
+                                onClick={rollDice}
+                                title="Roll for a random task"
+                                className="bg-white border-2 border-slate-100 p-5 rounded-[2rem] text-indigo-600 hover:border-indigo-600 hover:shadow-lg transition-all dice-shake"
+                            >
+                                <Icon name="dices" className="w-8 h-8" />
+                            </button>
                         </div>
 
-                        {/* MAIN CONTENT GRID */}
-                        <main className="max-w-7xl mx-auto px-6 py-20 w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-                            {filteredTasks.length > 0 ? filteredTasks.map(task => (
-                                <div key={task.id} className="bg-white rounded-[3.5rem] p-10 card-shadow border border-slate-50 flex flex-col hover:translate-y-[-8px] transition-all duration-500">
-                                    <div className="flex justify-between items-start mb-10">
-                                        <span className={`text-[10px] font-black px-4 py-2 rounded-xl uppercase tracking-widest ${
-                                            task.status === 'Open' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'
-                                        }`}>{task.status}</span>
-                                        <span className="text-4xl font-black text-slate-900 tracking-tighter">${task.reward}</span>
-                                    </div>
-                                    <h3 className="text-2xl font-black mb-4 text-slate-800 tracking-tight leading-tight">{task.title}</h3>
-                                    <p className="text-slate-400 text-sm mb-10 leading-relaxed font-medium line-clamp-2 italic">"{task.description}"</p>
-                                    
-                                    <div className="mb-10 p-5 bg-slate-50 rounded-[2rem] flex items-center gap-4 text-slate-400">
-                                        <Icon name="map-pin" className="w-5 h-5 text-indigo-400" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest leading-none">
-                                            {task.status === 'Open' ? "Location Redacted until Match" : task.address}
-                                        </span>
-                                    </div>
-
-                                    <div className="mt-auto flex items-center justify-between pt-8 border-t border-slate-50 mb-8">
-                                        <div className="flex items-center gap-3 font-bold text-xs text-slate-700 uppercase tracking-tighter">
-                                            <img src={task.avatar} className="w-12 h-12 rounded-full border-4 border-white shadow-md" />
-                                            <span>{task.postedBy}</span>
-                                        </div>
-                                    </div>
-
-                                    {task.status === 'Open' ? (
-                                        <button onClick={() => {
-                                            if(!user) return setAuthMode('login');
-                                            setTasks(tasks.map(t => t.id === task.id ? {...t, status: 'Pending'} : t));
-                                            setActiveChat(task);
-                                        }} className="w-full bg-slate-900 text-white font-black py-6 rounded-[2.5rem] hover:bg-indigo-600 transition-all shadow-xl shadow-slate-100 uppercase text-xs tracking-widest">Accept Quest</button>
-                                    ) : (
-                                        <button disabled className="w-full bg-slate-50 text-slate-300 font-black py-6 rounded-[2.5rem] uppercase text-[10px] tracking-widest italic">In Progress</button>
-                                    )}
-                                </div>
-                            )) : (
-                                <div className="col-span-full py-48 text-center">
-                                    <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-8 text-slate-200">
-                                        <Icon name="package-open" className="w-12 h-12" />
-                                    </div>
-                                    <h2 className="text-3xl font-black text-slate-300 uppercase tracking-tighter">No Active Sidequests</h2>
-                                    <p className="text-slate-400 font-medium italic">Your neighborhood is currently quiet.</p>
-                                </div>
-                            )}
-                        </main>
+                        <div className="flex justify-center items-center gap-3 overflow-x-auto hide-scrollbar px-4 max-w-2xl mx-auto">
+                            {['All', 'Labor', 'Errands', 'Digital', 'Creative'].map(c => (
+                                <button 
+                                    key={c}
+                                    onClick={() => setActiveCategory(c)}
+                                    className={`px-8 py-3.5 rounded-full text-[12px] font-black uppercase tracking-widest transition-all whitespace-nowrap shadow-sm border ${activeCategory === c ? 'bg-indigo-600 text-white border-indigo-600 shadow-indigo-100' : 'bg-white text-slate-400 border-slate-100 hover:border-indigo-200 hover:text-slate-600'}`}
+                                >{c}</button>
+                            ))}
+                        </div>
                     </div>
 
-                    {/* MODALS & AUTH REMAIN THE SAME BUT WITH "SEARCH" OPTIMIZATION */}
+                    {/* TASK GRID */}
+                    <main className="max-w-7xl mx-auto px-6 py-20 w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+                        {filteredTasks.length > 0 ? filteredTasks.map(task => (
+                            <div key={task.id} className="bg-white rounded-[3.5rem] p-10 card-shadow border border-slate-50 flex flex-col hover:translate-y-[-8px] transition-all duration-500">
+                                <div className="flex justify-between items-start mb-10">
+                                    <span className="text-[10px] font-black px-4 py-2 rounded-xl uppercase tracking-widest bg-emerald-50 text-emerald-600">Active Task</span>
+                                    <span className="text-4xl font-black text-slate-900 tracking-tighter">${task.reward}</span>
+                                </div>
+                                <h3 className="text-2xl font-black mb-4 text-slate-800 tracking-tight leading-tight">{task.title}</h3>
+                                <p className="text-slate-400 text-sm mb-10 leading-relaxed font-medium line-clamp-2 italic">"{task.description}"</p>
+                                
+                                <div className="mt-auto flex items-center justify-between pt-8 border-t border-slate-50 mb-8">
+                                    <div className="flex items-center gap-3 font-bold text-[10px] uppercase tracking-tighter">
+                                        <img src={task.avatar} className="w-12 h-12 rounded-full border-4 border-white shadow-md" />
+                                        <div>
+                                            <p className="text-slate-900">{task.postedBy}</p>
+                                            <p><RatingBadge rating={task.posterRating} count={task.posterReviews} /></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {task.status === 'Open' ? (
+                                    <button onClick={() => {
+                                        if(!user) return setAuthMode('login');
+                                        setTasks(tasks.map(t => t.id === task.id ? {...t, status: 'Pending'} : t));
+                                        setActiveChat(task);
+                                    }} className="w-full bg-slate-900 text-white font-black py-6 rounded-[2.5rem] hover:bg-indigo-600 transition-all shadow-xl shadow-slate-100 uppercase text-xs tracking-widest">Accept Task</button>
+                                ) : (
+                                    <button disabled className="w-full bg-slate-50 text-slate-300 font-black py-6 rounded-[2.5rem] uppercase text-[10px] tracking-widest italic">Task Accepted</button>
+                                )}
+                            </div>
+                        )) : (
+                            <div className="col-span-full py-48 text-center">
+                                <Icon name="package-open" className="w-12 h-12 text-slate-200 mx-auto mb-8" />
+                                <h2 className="text-3xl font-black text-slate-300 uppercase tracking-tighter">No current tasks</h2>
+                                <p className="text-slate-400 font-medium italic">Everything is handled in your area.</p>
+                            </div>
+                        )}
+                    </main>
+
+                    {/* MODALS */}
                     {authMode && (
                         <div className="fixed inset-0 z-[150] flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-6">
                             <div className="bg-white w-full max-w-lg rounded-[4rem] p-12 shadow-2xl relative overflow-y-auto max-h-[90vh]">
                                 <button onClick={() => setAuthMode(null)} className="absolute top-10 right-10 text-slate-200 hover:text-slate-900 transition-colors"><Icon name="x" /></button>
-                                <h2 className="text-4xl font-black mb-3 tracking-tight">{authMode === 'login' ? 'Login' : 'Sign Up'}</h2>
-                                <p className="text-slate-400 font-medium mb-10 italic">Access your local marketplace dashboard.</p>
+                                <h2 className="text-4xl font-black mb-3 tracking-tight">{authMode === 'login' ? 'Login' : 'Join SideQuest'}</h2>
+                                <p className="text-slate-400 font-medium mb-10 italic">Start completing tasks today.</p>
                                 <form onSubmit={handleAuth} className="space-y-6">
                                     {authMode === 'signup' && (
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase text-slate-300 ml-4">Full Name</label>
-                                            <input name="name" required placeholder="Michael L." className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600 transition-all" />
+                                            <label className="text-[10px] font-black uppercase text-slate-300 ml-4">Display Name</label>
+                                            <input name="name" required placeholder="Name" className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600 transition-all" />
                                         </div>
                                     )}
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-slate-300 ml-4">Email Address</label>
-                                        <input name="email" type="email" required placeholder="mike@example.com" className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600 transition-all" />
+                                        <label className="text-[10px] font-black uppercase text-slate-300 ml-4">Email</label>
+                                        <input name="email" type="email" required placeholder="email@address.com" className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600 transition-all" />
                                     </div>
                                     <button type="submit" className="w-full bg-indigo-600 text-white font-black py-6 rounded-[2.5rem] shadow-xl shadow-indigo-100 mt-6 active:scale-95 transition-all uppercase text-xs tracking-widest">
-                                        {authMode === 'login' ? 'Enter Dashboard' : 'Create Profile'}
+                                        {authMode === 'login' ? 'Enter' : 'Create Profile'}
                                     </button>
                                 </form>
                             </div>
                         </div>
                     )}
 
-                    {/* POST MODAL */}
                     {isPostModalOpen && (
                         <div className="fixed inset-0 z-[150] flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-6">
                             <div className="bg-white w-full max-w-lg rounded-[4rem] p-12 shadow-2xl relative overflow-y-auto max-h-[90vh]">
                                 <button onClick={() => setIsPostModalOpen(false)} className="absolute top-10 right-10 text-slate-200 hover:text-slate-900"><Icon name="x" /></button>
-                                <h2 className="text-4xl font-black mb-3 tracking-tight leading-none text-slate-900">Post Quest</h2>
-                                <p className="text-slate-400 font-medium mb-10 italic">Your address is only shared with verified matches.</p>
+                                <h2 className="text-4xl font-black mb-3 tracking-tight text-slate-900">Post Task</h2>
+                                <p className="text-slate-400 font-medium mb-10 italic">Detail what needs to be done.</p>
                                 <form onSubmit={handleCreateTask} className="space-y-6">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-slate-300 ml-4">Task Name</label>
-                                        <input name="title" required placeholder="e.g. Lawn Maintenance" className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600" />
+                                        <label className="text-[10px] font-black uppercase text-slate-300 ml-4">Title</label>
+                                        <input name="title" required placeholder="Task Title" className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600" />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-slate-300 ml-4">Exact Street Address</label>
-                                        <input name="address" required placeholder="67 Suffolk St, Riverview" className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600" />
+                                        <label className="text-[10px] font-black uppercase text-slate-300 ml-4">Street Address (Protected)</label>
+                                        <input name="address" required placeholder="123 Street Name" className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600" />
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <label className="text-[10px] font-black uppercase text-slate-300 ml-4">Reward ($)</label>
-                                            <input name="reward" type="number" required placeholder="50" className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600" />
+                                            <input name="reward" type="number" required placeholder="Price" className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600" />
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-[10px] font-black uppercase text-slate-300 ml-4">Category</label>
@@ -278,9 +288,9 @@
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black uppercase text-slate-300 ml-4">Description</label>
-                                        <textarea name="description" required rows="3" placeholder="Additional details..." className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600 resize-none"></textarea>
+                                        <textarea name="description" required rows="3" placeholder="Task details..." className="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-sm border-2 border-transparent focus:border-indigo-600 resize-none"></textarea>
                                     </div>
-                                    <button type="submit" className="w-full bg-slate-900 text-white font-black py-7 rounded-[3rem] shadow-xl mt-4 active:scale-95 transition-all uppercase text-xs tracking-widest">Deploy Quest</button>
+                                    <button type="submit" className="w-full bg-slate-900 text-white font-black py-7 rounded-[3rem] shadow-xl mt-4 active:scale-95 transition-all uppercase text-xs tracking-widest">Create Task</button>
                                 </form>
                             </div>
                         </div>
