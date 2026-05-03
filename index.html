@@ -3,588 +3,317 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SideQuest | Real Tasks. Real Rewards.</title>
-    
+    <title>Investor Gadget Inc. - Pitch Deck</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-        
-        :root {
-            --primary: #000000;
-            --accent: #3B82F6;
-            --success: #10B981;
-            --background: #FBFDFF;
+        body {
+            font-family: 'Inter', sans-serif;
         }
-
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: var(--background); 
-            color: #1A1A1A;
-            margin: 0;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
+        .slide {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
         }
-
-        /* UI Enhancements */
-        .glass-nav {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        .active-slide {
+            display: flex;
         }
-
-        .standard-card {
-            background: #FFFFFF;
-            border: 1px solid rgba(0, 0, 0, 0.04);
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.04);
-            border-radius: 2.5rem;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .standard-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08);
-            border-color: rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-black {
-            background: #000;
-            color: #fff;
-            padding: 1rem 2rem;
-            border-radius: 1.25rem;
-            font-weight: 800;
-            transition: all 0.2s ease;
-            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.15);
-        }
-
-        .btn-black:hover {
-            background: #222;
-            transform: scale(1.02);
-            box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.2);
-        }
-
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        
-        /* Animations */
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        .animate-slide-up {
-            animation: slideUp 0.5s ease-out forwards;
-        }
-
-        /* Profile & Status Badges */
-        .badge-verified {
-            background: linear-gradient(135deg, #3B82F6, #2563EB);
-            color: white;
-            font-size: 10px;
-            font-weight: 900;
-            padding: 4px 12px;
-            border-radius: 999px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Chat Styling */
-        .message-bubble {
-            max-width: 80%;
-            padding: 1rem 1.25rem;
-            border-radius: 1.5rem;
-            font-size: 14px;
-            font-weight: 500;
-            line-height: 1.5;
+        /* Professional color variables */
+        :root {
+            --primary-bg: #0a192f;      /* Deep Navy Blue */
+            --secondary-bg: #172a45;    /* Lighter Navy */
+            --accent-gold: #ffc107;     /* Gold/Amber */
+            --text-primary: #ccd6f6;    /* Light Slate */
+            --text-secondary: #8892b0;  /* Slate */
+            --highlight: #ffffff;       /* White */
         }
     </style>
 </head>
-<body>
+<body class="flex flex-col items-center justify-center min-h-screen p-4 overflow-hidden" style="background-color: var(--primary-bg);">
 
-    <div id="root"></div>
+    <!-- Slide Container -->
+    <div id="slideshow-container" class="w-full max-w-5xl h-[550px] md:h-[600px] bg-gradient-to-br from-[#172a45] to-[#0a192f] rounded-2xl shadow-2xl flex flex-col p-6 border border-[#233554]">
+        
+        <!-- Slide Content Area -->
+        <div class="flex-grow flex items-center justify-center text-white" style="color: var(--text-primary);">
 
-    <script type="text/babel">
-        const { useState, useEffect, useRef, useMemo } = React;
+            <!-- Slide 1: Title -->
+            <div id="slide-1" class="slide active-slide flex-col items-center justify-center text-center w-full px-4">
+                <h1 class="text-5xl md:text-7xl font-extrabold" style="color: var(--highlight);">Investor Gadget Inc.</h1>
+                <p class="mt-4 text-xl md:text-2xl max-w-3xl" style="color: var(--text-primary);">Saving companies money by saving employees money.</p>
+                <div class="mt-12 pt-8 border-t" style="border-color: #233554;">
+                    <p class="text-lg font-semibold" style="color: var(--highlight);">Mike Legacy, Founder</p>
+                    <p class="text-md" style="color: var(--text-secondary);">June 16, 2025</p>
+                </div>
+            </div>
 
-        // --- 1. CORE CONFIGURATION ---
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            <!-- Slide 2: The Problem -->
+            <div id="slide-2" class="slide flex-col items-center justify-center text-center w-full px-4">
+                <h2 class="text-4xl md:text-5xl font-bold text-center mb-2" style="color: var(--highlight);">The Core Operational Drain: Financial Stress</h2>
+                <p class="text-lg mb-10" style="color: var(--text-secondary);">Employee financial pressure creates a massive, recurring cost to your business.</p>
+                <div class="grid md:grid-cols-2 gap-8 w-full max-w-4xl text-left">
+                    <div class="p-6 rounded-lg border" style="background-color: var(--secondary-bg); border-color: #233554;">
+                        <h3 class="text-lg font-semibold" style="color: var(--accent-gold);">The "Small" Raise</h3>
+                        <p class="text-4xl font-bold mt-2" style="color: var(--highlight);">$2,080 / Year</p>
+                        <p style="color: var(--text-primary);">The annual cost of a minimal <span class="font-bold text-white">$1/hour</span> raise per employee.</p>
+                    </div>
+                    <div class="p-6 rounded-lg border" style="background-color: var(--secondary-bg); border-color: #233554;">
+                        <h3 class="text-lg font-semibold" style="color: var(--accent-gold);">The Realistic Raise</h3>
+                        <p class="text-4xl font-bold mt-2" style="color: var(--highlight);">$10,000 / Year</p>
+                        <p style="color: var(--text-primary);">A more typical request, costing nearly <span class="font-bold text-white">5x</span> that amount.</p>
+                    </div>
+                </div>
+                 <p class="mt-8 text-lg" style="color: var(--text-primary);">This directly impacts turnover, productivity, and overall budget stability.</p>
+            </div>
 
-        // --- 2. MAIN APPLICATION COMPONENT ---
-        const App = () => {
-            const [view, setView] = useState('browse'); // 'browse', 'post', 'profile', 'my-quests', 'leaderboard'
-            const [user, setUser] = useState(null);
-            const [loading, setLoading] = useState(true);
-            const [quests, setQuests] = useState([]);
-            const [searchQuery, setSearchQuery] = useState("");
-            const [selectedCategory, setSelectedCategory] = useState("All");
-            const [activeChat, setActiveChat] = useState(null);
-            const [notifications, setNotifications] = useState([]);
+            <!-- Slide 3: The Solution -->
+            <div id="slide-3" class="slide flex-col items-center justify-center text-center w-full px-4">
+                 <h2 class="text-4xl md:text-5xl font-bold text-center mb-4" style="color: var(--highlight);">A Strategic Financial Wellness Program</h2>
+                 <p class="text-xl mb-10 max-w-3xl" style="color: var(--text-secondary);">A B2B service delivering a measurable Return on Investment.</p>
+                 <div class="flex flex-col md:flex-row gap-8 w-full max-w-4xl">
+                    <div class="p-6 rounded-lg border flex-1" style="background-color: var(--secondary-bg); border-color: #233554;">
+                        <h3 class="text-2xl font-bold mb-2" style="color: var(--accent-gold);">1-on-1 Professional Coaching</h3>
+                        <p style="color: var(--text-primary);">Confidential sessions with certified financial professionals to build personalized action plans.</p>
+                    </div>
+                    <div class="p-6 rounded-lg border flex-1" style="background-color: var(--secondary-bg); border-color: #233554;">
+                        <h3 class="text-2xl font-bold mb-2" style="color: var(--accent-gold);">"The Oracle" AI Platform</h3>
+                        <p style="color: var(--text-primary);">A 24/7 AI-powered chatbot, expertly programmed to provide instant financial guidance.</p>
+                    </div>
+                 </div>
+                 <p class="mt-8 text-lg font-semibold" style="color: var(--text-primary);">We empower your workforce to master their income, mitigating the cycle of pay increase requests.</p>
+            </div>
             
-            // --- 3. AUTHENTICATION LOGIC ---
-            useEffect(() => {
-                const checkUser = async () => {
-                    const { data: { session } } = await supabase.auth.getSession();
-                    setUser(session?.user ?? null);
-                    await loadQuests();
-                    setLoading(false);
-                };
-                checkUser();
+            <!-- Slide 4: Market Opportunity -->
+            <div id="slide-4" class="slide flex-col items-center justify-center text-center w-full px-4">
+                <h2 class="text-4xl md:text-5xl font-bold text-center mb-2" style="color: var(--highlight);">A Multi-Trillion Dollar Inefficiency</h2>
+                <p class="text-lg mb-8" style="color: var(--text-secondary);">The scale of this challenge presents a profound opportunity for cost savings.</p>
+                <div class="w-full max-w-4xl p-6 rounded-lg border" style="background-color: var(--primary-bg); border-color: #233554;">
+                    <p class="text-xl mb-4" style="color: var(--text-primary);">Total Workforce (Canada & US)</p>
+                    <p class="text-6xl font-extrabold" style="color: var(--accent-gold);">180 Million</p>
+                    <hr class="my-6" style="border-color: #233554;">
+                    <p class="text-xl mb-2" style="color: var(--text-primary);">Potential Annual Cost to Businesses</p>
+                    <div class="flex flex-col md:flex-row justify-around items-center mt-4">
+                         <div class="text-center mb-6 md:mb-0">
+                            <p class="text-4xl font-bold" style="color: var(--highlight);">$374 Billion</p>
+                            <p class="text-sm" style="color: var(--text-secondary);">(from minimal $1/hr raises)</p>
+                         </div>
+                         <div class="text-center">
+                            <p class="text-4xl font-bold" style="color: var(--accent-gold);">$1.8 Trillion</p>
+                            <p class="text-sm" style="color: var(--text-secondary);">(from typical $10k raises)</p>
+                         </div>
+                    </div>
+                </div>
+            </div>
 
-                const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-                    setUser(session?.user ?? null);
-                    if (session?.user) loadUserMetadata(session.user.id);
+            <!-- Slide 5: How It Works -->
+            <div id="slide-5" class="slide flex-col items-center justify-center text-center w-full px-4">
+                <h2 class="text-4xl md:text-5xl font-bold text-center mb-10" style="color: var(--highlight);">Our 3-Step Empowerment Process</h2>
+                <div class="flex flex-col md:flex-row justify-between w-full max-w-5xl space-y-8 md:space-y-0 md:space-x-8">
+                    <div class="flex-1 text-center">
+                        <div class="border-2 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 font-bold text-2xl" style="border-color: var(--accent-gold); color: var(--accent-gold);">1</div>
+                        <h3 class="text-2xl font-bold mb-2" style="color: var(--highlight);">Assess</h3>
+                        <p style="color: var(--text-secondary);">Employees complete a confidential online assessment to establish their "Financial Score."</p>
+                    </div>
+                    <div class="flex-1 text-center">
+                        <div class="border-2 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 font-bold text-2xl" style="border-color: var(--accent-gold); color: var(--accent-gold);">2</div>
+                        <h3 class="text-2xl font-bold mb-2" style="color: var(--highlight);">Consult</h3>
+                        <p style="color: var(--text-secondary);">A mandatory 30-minute virtual session with our experts builds a personalized strategy.</p>
+                    </div>
+                    <div class="flex-1 text-center">
+                        <div class="border-2 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 font-bold text-2xl" style="border-color: var(--accent-gold); color: var(--accent-gold);">3</div>
+                        <h3 class="text-2xl font-bold mb-2" style="color: var(--highlight);">Empower</h3>
+                        <p style="color: var(--text-secondary);">Full access to "The Oracle" AI, resource libraries, and continuous professional support.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 6: Competitive Advantage -->
+            <div id="slide-6" class="slide flex-col items-center justify-center w-full px-4">
+                <h2 class="text-4xl md:text-5xl font-bold text-center mb-10" style="color: var(--highlight);">Our Strategic Differentiators</h2>
+                <ul class="space-y-6 w-full max-w-3xl">
+                    <li class="p-6 rounded-lg border-l-4" style="background-color: var(--secondary-bg); border-color: var(--accent-gold);">
+                        <h3 class="text-xl font-bold" style="color: var(--highlight);">Direct & Measurable ROI</h3>
+                        <p class="mt-1" style="color: var(--text-primary);">Our program is explicitly designed to be self-funding by reducing payroll inflation.</p>
+                    </li>
+                    <li class="p-6 rounded-lg border-l-4" style="background-color: var(--secondary-bg); border-color: var(--accent-gold);">
+                        <h3 class="text-xl font-bold" style="color: var(--highlight);">Mandatory Onboarding Engagement</h3>
+                        <p class="mt-1" style="color: var(--text-primary);">The required 1-on-1 consultation guarantees adoption and immediate value.</p>
+                    </li>
+                    <li class="p-6 rounded-lg border-l-4" style="background-color: var(--secondary-bg); border-color: var(--accent-gold);">
+                        <h3 class="text-xl font-bold" style="color: var(--highlight);">Professional & Accessible Branding</h3>
+                        <p class="mt-1" style="color: var(--text-primary);">"Investor Gadget" and "The Oracle" are intuitive, memorable, and non-intimidating.</p>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Slide 7: Go-To-Market Strategy -->
+            <div id="slide-7" class="slide flex-col items-center justify-center w-full px-4">
+                <h2 class="text-4xl md:text-5xl font-bold text-center mb-10" style="color: var(--highlight);">Our Go-To-Market Strategy</h2>
+                <div class="w-full max-w-2xl space-y-4">
+                    <div class="p-4 rounded-lg" style="background-color: var(--secondary-bg);">
+                        <h3 class="font-bold" style="color: var(--accent-gold);">Phase 1: Executive Outreach</h3>
+                        <p style="color: var(--text-primary);">Targeted engagement with C-Suite and HR leaders at major North American corporations.</p>
+                    </div>
+                    <div class="p-4 rounded-lg" style="background-color: var(--secondary-bg);">
+                        <h3 class="font-bold" style="color: var(--accent-gold);">Phase 2: Secure Paid Pilots</h3>
+                        <p style="color: var(--text-primary);">Launch 3-5 pilot programs to generate case studies and quantifiable ROI data.</p>
+                    </div>
+                    <div class="p-4 rounded-lg" style="background-color: var(--secondary-bg);">
+                        <h3 class="font-bold" style="color: var(--accent-gold);">Phase 3: Data-Driven Expansion</h3>
+                        <p style="color: var(--text-primary);">Leverage proven results to fuel broad market penetration and secure enterprise contracts.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 8: The Team -->
+            <div id="slide-8" class="slide flex-col items-center justify-center w-full px-4">
+                <h2 class="text-4xl md:text-5xl font-bold text-center mb-10" style="color: var(--highlight);">Leadership & Execution Team</h2>
+                <div class="w-full max-w-3xl">
+                    <div class="text-center mb-8 p-6 rounded-lg border" style="background-color: var(--secondary-bg); border-color: #233554;">
+                        <h3 class="text-2xl font-bold" style="color: var(--highlight);">Mike Legacy</h3>
+                        <p class="font-semibold" style="color: var(--accent-gold);">Founder & Visionary</p>
+                    </div>
+                    <h4 class="text-center text-xl font-semibold mb-4" style="color: var(--highlight);">Key Hires (Post-Funding)</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center" style="color: var(--text-primary);">
+                        <div class="p-4 rounded-lg" style="background-color: var(--secondary-bg);"><p>Lead Software Developer</p></div>
+                        <div class="p-4 rounded-lg" style="background-color: var(--secondary-bg);"><p>Certified Financial Professionals</p></div>
+                        <div class="p-4 rounded-lg" style="background-color: var(--secondary-bg);"><p>B2B Sales & Marketing Lead</p></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 9: The Ask -->
+            <div id="slide-9" class="slide flex-col items-center justify-around w-full px-4">
+                 <h2 class="text-4xl md:text-5xl font-bold text-center" style="color: var(--highlight);">Seed Funding Request</h2>
+                 <p class="text-6xl font-extrabold" style="color: var(--accent-gold);">$500,000 CAD</p>
+                 <div class="w-full max-w-2xl">
+                     <h3 class="text-lg font-semibold text-center mb-2" style="color: var(--highlight);">Use of Funds</h3>
+                     <div class="rounded-full h-8 w-full flex overflow-hidden border" style="background-color: var(--secondary-bg); border-color: #233554;">
+                         <div class="h-full" style="width: 40%; background-color: var(--accent-gold);" title="Technology"></div>
+                         <div class="h-full" style="width: 30%; background-color: rgba(255, 193, 7, 0.7);" title="Personnel"></div>
+                         <div class="h-full" style="width: 20%; background-color: rgba(255, 193, 7, 0.5);" title="Sales & Marketing"></div>
+                         <div class="h-full" style="width: 10%; background-color: rgba(255, 193, 7, 0.3);" title="Operations"></div>
+                     </div>
+                     <div class="flex justify-between text-sm mt-2 px-2" style="color: var(--text-secondary);">
+                         <span>40% Technology</span>
+                         <span>30% Personnel</span>
+                         <span>20% Marketing</span>
+                         <span>10% Operations</span>
+                     </div>
+                 </div>
+                 <p class="text-xl font-semibold text-center" style="color: var(--text-primary);">For an equity stake in a disruptive, high-growth venture.</p>
+            </div>
+
+            <!-- Slide 10: Financial Projections -->
+             <div id="slide-10" class="slide flex-col items-center justify-center w-full px-4">
+                <h2 class="text-4xl md:text-5xl font-bold text-center mb-10" style="color: var(--highlight);">Growth & Revenue Trajectory</h2>
+                <div class="w-full max-w-4xl space-y-6">
+                    <div class="text-center p-4 rounded-lg" style="background-color: var(--secondary-bg);">
+                        <p class="text-lg" style="color: var(--text-secondary);">Revenue Model</p>
+                        <p class="text-2xl font-bold" style="color: var(--highlight);">Tiered B2B SaaS Subscription</p>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-6 text-center">
+                        <div class="border p-6 rounded-lg" style="border-color: #233554;">
+                            <h3 class="text-2xl font-bold" style="color: var(--accent-gold);">Year 1</h3>
+                            <p class="text-xl font-semibold mt-2" style="color: var(--highlight);">3 Pilot Programs</p>
+                            <p style="color: var(--text-secondary);">10,000 employees</p>
+                        </div>
+                        <div class="border p-6 rounded-lg" style="border-color: #233554;">
+                            <h3 class="text-2xl font-bold" style="color: var(--accent-gold);">Year 3</h3>
+                            <p class="text-xl font-semibold mt-2" style="color: var(--highlight);">50,000+ Subscribers</p>
+                            <p style="color: var(--text-secondary);">Market Expansion</p>
+                        </div>
+                         <div class="border p-6 rounded-lg" style="border-color: #233554;">
+                            <h3 class="text-2xl font-bold" style="color: var(--accent-gold);">Year 5</h3>
+                            <p class="text-xl font-semibold mt-2" style="color: var(--highlight);">250,000+ Subscribers</p>
+                            <p style="color: var(--text-secondary);">Market Leadership</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 11: Contact -->
+            <div id="slide-11" class="slide flex-col items-center justify-center text-center w-full px-4">
+                <h2 class="text-5xl md:text-6xl font-bold" style="color: var(--highlight);">Thank You</h2>
+                <p class="mt-4 text-xl font-semibold max-w-2xl" style="color: var(--accent-gold);">Let's partner to build more profitable and stable companies.</p>
+                <div class="mt-10 pt-10 border-t text-lg" style="border-color: #233554;">
+                    <p class="font-bold" style="color: var(--highlight);">Mike Legacy, Founder</p>
+                    <p style="color: var(--text-secondary);">investorgadgetinc@gmail.com</p>
+                    <a href="https://www.linkedin.com/in/mikedonlegacy/" target="_blank" class="hover:underline" style="color: var(--accent-gold);">linkedin.com/in/mikedonlegacy</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex-shrink-0 flex items-center justify-between pt-4 mt-4 border-t" style="border-color: #233554;">
+            <button id="prev-btn" class="font-bold py-2 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed" style="background-color: var(--secondary-bg); color: var(--text-primary);">
+                Prev
+            </button>
+            <div id="slide-counter" class="font-medium" style="color: var(--text-secondary);">
+                1 / 11
+            </div>
+            <button id="next-btn" class="text-gray-900 font-bold py-2 px-6 rounded-lg transition-colors" style="background-color: var(--accent-gold);">
+                Next
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let currentSlide = 1;
+            const totalSlides = 11;
+            
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const slideCounter = document.getElementById('slide-counter');
+
+            function showSlide(slideNumber) {
+                slides.forEach(slide => {
+                    slide.classList.remove('active-slide');
                 });
 
-                return () => authListener.subscription.unsubscribe();
-            }, []);
-
-            // --- 4. DATABASE OPERATIONS ---
-            const loadQuests = async () => {
-                const { data, error } = await supabase
-                    .from('quests')
-                    .select('*, profiles(full_name, avatar_url, rating)')
-                    .order('created_at', { ascending: false });
-                
-                if (error) console.error("Error fetching quests:", error);
-                else setQuests(data || []);
-            };
-
-            const loadUserMetadata = async (userId) => {
-                const { data, error } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', userId)
-                    .single();
-                if (data) setUser(prev => ({ ...prev, profile: data }));
-            };
-
-            const handleAcceptQuest = async (quest) => {
-                if (!user) {
-                    alert("Please log in to accept a quest.");
-                    return;
+                const newSlide = document.getElementById(`slide-${slideNumber}`);
+                if (newSlide) {
+                    newSlide.classList.add('active-slide');
                 }
-                setActiveChat(quest);
-            };
 
-            // --- 5. UI COMPONENTS ---
+                slideCounter.textContent = `${slideNumber} / ${totalSlides}`;
+                
+                prevBtn.disabled = slideNumber === 1;
+                nextBtn.disabled = slideNumber === totalSlides;
+            }
 
-            const Navigation = () => (
-                <nav className="fixed top-0 w-full h-24 glass-nav z-[100] px-6 md:px-16 flex items-center justify-between">
-                    {/* Brand & Slogan */}
-                    <div className="flex flex-col cursor-pointer group" onClick={() => setView('browse')}>
-                        <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
-                                <i data-lucide="zap" className="w-5 h-5 text-white fill-white"></i>
-                            </div>
-                            <h1 className="text-2xl font-[900] text-black tracking-tighter leading-none">SideQuest</h1>
-                        </div>
-                        <span className="text-[10px] font-[800] text-gray-400 uppercase tracking-[0.25em] mt-2 italic pl-1">
-                            Real Tasks. Real Rewards.
-                        </span>
-                    </div>
-
-                    {/* Desktop Menu */}
-                    <div className="hidden lg:flex items-center gap-10 flex-grow justify-center mr-10">
-                        {['Browse', 'Post a Quest', 'Leaderboard', 'My Activity'].map((item) => (
-                            <button 
-                                key={item}
-                                onClick={() => {
-                                    if (item === 'Browse') setView('browse');
-                                    if (item === 'Post a Quest') setView('post');
-                                    if (item === 'My Activity') setView('my-quests');
-                                }}
-                                className={`text-[13px] font-black uppercase tracking-widest transition-all hover:text-black ${
-                                    view === item.toLowerCase().replace(' ', '-') ? 'text-black underline underline-offset-8 decoration-4' : 'text-gray-400'
-                                }`}
-                            >
-                                {item}
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* Auth Area */}
-                    <div className="flex items-center gap-6">
-                        {!user ? (
-                            <div className="flex items-center gap-4">
-                                <button onClick={() => supabase.auth.signInWithOAuth({ provider: 'google' })} className="text-sm font-bold text-gray-600 hover:text-black px-4">Log In</button>
-                                <button className="btn-black text-sm">Join SideQuest</button>
-                            </div>
-                        ) : (
-                            <div className="flex items-center gap-5 pl-6 border-l border-gray-100">
-                                <div className="text-right hidden sm:block">
-                                    <p className="text-[13px] font-black text-black leading-none mb-1">{user.user_metadata?.full_name}</p>
-                                    <span className="badge-verified">Verified</span>
-                                </div>
-                                <button onClick={() => setView('profile')} className="relative">
-                                    <img 
-                                        src={user.user_metadata?.avatar_url} 
-                                        className="w-12 h-12 rounded-2xl border-2 border-white shadow-md hover:scale-110 transition" 
-                                    />
-                                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                </nav>
-            );
-
-            const MarketplaceHero = () => (
-                <div className="pt-12 mb-16">
-                    <div className="max-w-3xl">
-                        <h2 className="text-7xl font-[950] text-black tracking-[ -0.04em] leading-[0.9] mb-8">
-                            High Stakes. <br/>
-                            <span className="text-gray-200">Higher Rewards.</span>
-                        </h2>
-                        
-                        <div className="relative group max-w-2xl">
-                            <div className="absolute inset-0 bg-black/5 blur-3xl group-focus-within:bg-blue-500/10 transition-all"></div>
-                            <input 
-                                type="text" 
-                                placeholder="What's your specialty? (e.g. Code, Design, Logistics)"
-                                className="relative w-full h-20 bg-white border border-gray-100 rounded-[2rem] px-16 text-xl font-bold shadow-2xl shadow-gray-100/50 focus:ring-8 focus:ring-black/5 outline-none transition-all"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                            <i data-lucide="search" className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 w-7 h-7"></i>
-                            <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                                <button className="bg-black text-white px-8 py-3 rounded-xl text-xs font-[900] uppercase tracking-widest">Hunt</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    {/* Category Scroller */}
-                    <div className="flex gap-4 mt-12 overflow-x-auto pb-4 hide-scrollbar">
-                        {['All', 'Development', 'Creative', 'Logistics', 'Professional', 'Domestic'].map(cat => (
-                            <button 
-                                key={cat}
-                                onClick={() => setSelectedCategory(cat)}
-                                className={`whitespace-nowrap px-8 py-4 rounded-2xl text-[11px] font-[900] uppercase tracking-widest transition-all ${
-                                    selectedCategory === cat 
-                                    ? 'bg-black text-white shadow-xl scale-105' 
-                                    : 'bg-white text-gray-400 border border-gray-100 hover:border-black hover:text-black'
-                                }`}
-                            >
-                                {cat}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            );
-
-            const QuestFeed = () => (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
-                    {quests
-                        .filter(q => selectedCategory === 'All' || q.category === selectedCategory)
-                        .filter(q => q.title.toLowerCase().includes(searchQuery.toLowerCase()))
-                        .map((quest, idx) => (
-                        <div key={quest.id} className="standard-card p-10 flex flex-col justify-between group animate-slide-up" style={{animationDelay: `${idx * 0.1}s`}}>
-                            <div>
-                                <div className="flex justify-between items-start mb-8">
-                                    <div className="px-4 py-1.5 bg-gray-50 rounded-full">
-                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic">{quest.category}</span>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-1">Bounty</p>
-                                        <p className="text-3xl font-[950] text-black leading-none">${quest.reward}</p>
-                                    </div>
-                                </div>
-                                <h3 className="text-2xl font-extrabold text-black mb-4 leading-tight group-hover:text-blue-600 transition">{quest.title}</h3>
-                                <p className="text-gray-400 text-sm font-medium leading-relaxed line-clamp-3 mb-8">
-                                    {quest.description}
-                                </p>
-                            </div>
-                            
-                            <div className="pt-8 border-t border-gray-50 flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-gray-100 border border-gray-200 overflow-hidden">
-                                        <img src={`https://api.dicebear.com/7.x/shapes/svg?seed=${quest.id}`} />
-                                    </div>
-                                    <div>
-                                        <p className="text-[11px] font-black text-black leading-none mb-1">Client_{quest.id}02</p>
-                                        <div className="flex gap-0.5">
-                                            {[1,2,3,4,5].map(s => <div key={s} className="w-2 h-2 bg-yellow-400 rounded-full"></div>)}
-                                        </div>
-                                    </div>
-                                </div>
-                                <button 
-                                    onClick={() => handleAcceptQuest(quest)}
-                                    className="px-6 py-3 bg-black text-white rounded-xl text-[11px] font-black uppercase tracking-widest hover:scale-105 transition active:scale-95"
-                                >
-                                    Engage
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            );
-
-            const PostQuestForm = () => (
-                <div className="max-w-4xl mx-auto pt-10 animate-slide-up pb-20">
-                    <div className="bg-white rounded-[3.5rem] p-16 border border-gray-100 shadow-2xl">
-                        <div className="mb-12">
-                            <h2 className="text-5xl font-[950] text-black tracking-tight mb-4 italic">Post a Bounty.</h2>
-                            <p className="text-gray-400 font-bold text-sm uppercase tracking-[0.3em]">Broadcast your mission to the network.</p>
-                        </div>
-                        
-                        <form className="space-y-12" onSubmit={(e) => {
-                            e.preventDefault();
-                            alert("Bounty Broadcasted to Network.");
-                            setView('browse');
-                        }}>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                                <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-gray-300 uppercase tracking-[0.4em] ml-2">Quest Designation</label>
-                                    <input required type="text" placeholder="e.g. Project 'Phoenix' UI Design" className="w-full p-6 bg-gray-50 border-none rounded-3xl font-bold text-lg outline-none focus:ring-4 focus:ring-blue-500/5 transition" />
-                                </div>
-                                <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-gray-300 uppercase tracking-[0.4em] ml-2">Bounty Reward (USD)</label>
-                                    <input required type="number" placeholder="500.00" className="w-full p-6 bg-gray-50 border-none rounded-3xl font-bold text-lg outline-none focus:ring-4 focus:ring-blue-500/5 transition" />
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                                <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-gray-300 uppercase tracking-[0.4em] ml-2">Mission Category</label>
-                                    <select className="w-full p-6 bg-gray-50 border-none rounded-3xl font-bold text-lg outline-none focus:ring-4 focus:ring-blue-500/5 transition appearance-none">
-                                        <option>Development</option>
-                                        <option>Creative</option>
-                                        <option>Logistics</option>
-                                        <option>Professional</option>
-                                    </select>
-                                </div>
-                                <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-gray-300 uppercase tracking-[0.4em] ml-2">Deadline (Days)</label>
-                                    <input required type="number" placeholder="3" className="w-full p-6 bg-gray-50 border-none rounded-3xl font-bold text-lg outline-none focus:ring-4 focus:ring-blue-500/5 transition" />
-                                </div>
-                            </div>
-
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black text-gray-300 uppercase tracking-[0.4em] ml-2">Mission Briefing</label>
-                                <textarea required rows="6" placeholder="Provide technical specs and deliverables..." className="w-full p-8 bg-gray-50 border-none rounded-[2.5rem] font-bold text-lg outline-none focus:ring-4 focus:ring-blue-500/5 transition resize-none"></textarea>
-                            </div>
-
-                            <button type="submit" className="w-full bg-black text-white py-10 rounded-[2.5rem] font-[950] text-2xl uppercase tracking-[0.2em] shadow-2xl hover:scale-[1.01] transition active:scale-95">
-                                Initialize Quest
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            );
-
-            const ProfileDashboard = () => (
-                <div className="max-w-6xl mx-auto pt-10 pb-20 animate-slide-up">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                        {/* Profile Card */}
-                        <div className="lg:col-span-1 space-y-8">
-                            <div className="bg-white p-12 rounded-[3.5rem] border border-gray-100 shadow-xl text-center">
-                                <div className="relative w-32 h-32 mx-auto mb-8">
-                                    <img src={user?.user_metadata?.avatar_url} className="w-32 h-32 rounded-[2.5rem] border-4 border-white shadow-lg" />
-                                    <div className="absolute -bottom-2 -right-2 bg-blue-600 p-2 rounded-xl text-white shadow-lg">
-                                        <i data-lucide="shield-check" className="w-5 h-5"></i>
-                                    </div>
-                                </div>
-                                <h2 className="text-3xl font-[950] text-black tracking-tight mb-2">{user?.user_metadata?.full_name}</h2>
-                                <p className="text-gray-400 font-extrabold text-[10px] uppercase tracking-widest mb-8">Professional Operative</p>
-                                
-                                <div className="flex justify-center gap-4 border-t pt-8">
-                                    <div className="text-center">
-                                        <p className="text-xl font-black">24</p>
-                                        <p className="text-[9px] font-bold text-gray-300 uppercase tracking-widest">Success</p>
-                                    </div>
-                                    <div className="w-px h-10 bg-gray-100"></div>
-                                    <div className="text-center">
-                                        <p className="text-xl font-black">4.9</p>
-                                        <p className="text-[9px] font-bold text-gray-300 uppercase tracking-widest">Rating</p>
-                                    </div>
-                                    <div className="w-px h-10 bg-gray-100"></div>
-                                    <div className="text-center">
-                                        <p className="text-xl font-black">$2.4k</p>
-                                        <p className="text-[9px] font-bold text-gray-300 uppercase tracking-widest">Earnings</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="bg-black p-10 rounded-[2.5rem] shadow-2xl text-white">
-                                <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-500 mb-6 italic">Skill Matrix</h4>
-                                <div className="space-y-4">
-                                    {['UI Architecture', 'Logistics', 'Creative Direction'].map(skill => (
-                                        <div key={skill} className="flex items-center justify-between">
-                                            <span className="text-xs font-bold">{skill}</span>
-                                            <div className="w-24 h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                                                <div className="w-3/4 h-full bg-blue-500"></div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Activity Feed & Reviews */}
-                        <div className="lg:col-span-2 space-y-10">
-                            <div className="bg-white p-12 rounded-[3.5rem] border border-gray-100 shadow-xl">
-                                <h4 className="text-sm font-[950] uppercase tracking-[0.3em] text-gray-300 mb-10 italic">Recent Transmissions</h4>
-                                <div className="space-y-8">
-                                    {[1, 2, 3].map(i => (
-                                        <div key={i} className="flex gap-6 pb-8 border-b border-gray-50 last:border-0 last:pb-0">
-                                            <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center shrink-0">
-                                                <i data-lucide="check-circle-2" className="w-6 h-6 text-green-500"></i>
-                                            </div>
-                                            <div>
-                                                <div className="flex justify-between items-start mb-2">
-                                                    <h5 className="font-black text-lg">Mission: Project Apex Migration</h5>
-                                                    <span className="text-yellow-400 font-bold text-xs italic">★★★★★</span>
-                                                </div>
-                                                <p className="text-gray-400 text-sm font-medium mb-4">"Exceptional execution. Completed the task 3 hours before the deadline. Technical skills are top-tier."</p>
-                                                <div className="flex items-center gap-4 text-[10px] font-black text-gray-300 uppercase tracking-widest italic">
-                                                    <span>Client: ZeroSum_Alpha</span>
-                                                    <span>$450 Bounty</span>
-                                                    <span>2 days ago</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-
-            const GlobalChat = () => {
-                if (!activeChat) return null;
-                return (
-                    <div className="fixed bottom-10 right-10 w-[450px] h-[650px] bg-white rounded-[3rem] shadow-2xl border border-gray-100 flex flex-col z-[1000] overflow-hidden animate-slide-up">
-                        {/* Header */}
-                        <div className="p-8 bg-black text-white flex justify-between items-center">
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-2xl bg-gray-900 flex items-center justify-center border border-gray-800">
-                                    <i data-lucide="message-square" className="w-6 h-6 text-blue-500"></i>
-                                </div>
-                                <div>
-                                    <h4 className="text-sm font-black truncate max-w-[200px] mb-1">{activeChat.title}</h4>
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                        <span className="text-[9px] text-gray-500 font-black uppercase tracking-[0.2em] italic">Live Connection</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <button onClick={() => setActiveChat(null)} className="p-3 hover:bg-gray-900 rounded-2xl transition">
-                                <i data-lucide="x" className="w-6 h-6"></i>
-                            </button>
-                        </div>
-
-                        {/* Messages */}
-                        <div className="flex-grow p-8 overflow-y-auto bg-gray-50 space-y-6">
-                            <div className="flex flex-col gap-2">
-                                <div className="message-bubble bg-white text-gray-600 shadow-sm rounded-bl-none">
-                                    Welcome to the secure channel. Briefly explain your plan for this bounty.
-                                </div>
-                                <span className="text-[9px] font-black text-gray-300 uppercase ml-2 tracking-widest italic leading-none">System • 12:45 PM</span>
-                            </div>
-
-                            <div className="flex flex-col gap-2 items-end">
-                                <div className="message-bubble bg-black text-white shadow-xl rounded-br-none">
-                                    Acknowledged. I've analyzed the mission brief. I can initiate the UI overhaul immediately using the existing design system.
-                                </div>
-                                <span className="text-[9px] font-black text-gray-300 uppercase mr-2 tracking-widest italic leading-none">You • 12:46 PM</span>
-                            </div>
-                            
-                            <div className="text-center pt-4">
-                                <span className="bg-gray-100 px-4 py-1.5 rounded-full text-[9px] font-black text-gray-400 uppercase tracking-widest">Client is typing...</span>
-                            </div>
-                        </div>
-
-                        {/* Input */}
-                        <div className="p-6 bg-white border-t border-gray-100">
-                            <div className="flex items-center gap-4 bg-gray-50 p-2 rounded-[1.75rem] border border-transparent focus-within:border-gray-200 transition">
-                                <input 
-                                    type="text" 
-                                    placeholder="Type your transmission..." 
-                                    className="flex-grow bg-transparent border-none px-4 py-3 text-sm font-bold focus:ring-0 outline-none" 
-                                />
-                                <button className="bg-black text-white p-4 rounded-2xl shadow-xl hover:bg-blue-600 transition group">
-                                    <i data-lucide="send" className="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
-                                </button>
-                            </div>
-                            <div className="flex justify-center gap-6 mt-4">
-                                <button className="text-[9px] font-black text-gray-300 uppercase tracking-widest hover:text-black transition">Attach Brief</button>
-                                <button className="text-[9px] font-black text-gray-300 uppercase tracking-widest hover:text-black transition">Propose Bounty Edit</button>
-                            </div>
-                        </div>
-                    </div>
-                );
-            };
-
-            // --- 6. RENDER RE-SYNC ---
-            useEffect(() => {
-                if (window.lucide) window.lucide.createIcons();
+            prevBtn.addEventListener('click', () => {
+                if (currentSlide > 1) {
+                    currentSlide--;
+                    showSlide(currentSlide);
+                }
             });
 
-            // --- 7. MASTER RENDER ---
-            return (
-                <div className="min-h-screen">
-                    <Navigation />
-                    
-                    <main className="pt-32 px-6 md:px-16 max-w-[1600px] mx-auto pb-32">
-                        {view === 'browse' && (
-                            <div className="fade-in">
-                                <MarketplaceHero />
-                                <QuestFeed />
-                            </div>
-                        )}
-                        
-                        {view === 'post' && <PostQuestForm />}
-                        
-                        {view === 'profile' && <ProfileDashboard />}
-                        
-                        {view === 'my-quests' && (
-                            <div className="max-w-4xl mx-auto pt-10 text-center animate-slide-up">
-                                <div className="bg-white p-20 rounded-[3.5rem] border border-gray-100 shadow-xl">
-                                    <div className="w-20 h-20 bg-gray-50 rounded-3xl flex items-center justify-center mx-auto mb-8">
-                                        <i data-lucide="activity" className="w-10 h-10 text-gray-200"></i>
-                                    </div>
-                                    <h2 className="text-3xl font-[950] mb-4 tracking-tight">Active Deployments</h2>
-                                    <p className="text-gray-400 font-bold text-sm uppercase tracking-widest mb-10 leading-relaxed">
-                                        You are currently not deployed on any active quests. <br/>
-                                        Return to the marketplace to find an open mission.
-                                    </p>
-                                    <button onClick={() => setView('browse')} className="btn-black">Browse Marketplace</button>
-                                </div>
-                            </div>
-                        )}
-                    </main>
+            nextBtn.addEventListener('click', () => {
+                if (currentSlide < totalSlides) {
+                    currentSlide++;
+                    showSlide(currentSlide);
+                }
+            });
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' && !nextBtn.disabled) {
+                    nextBtn.click();
+                } else if (e.key === 'ArrowLeft' && !prevBtn.disabled) {
+                    prevBtn.click();
+                }
+            });
 
-                    {/* Persistant Global Elements */}
-                    <GlobalChat />
-                    
-                    {/* Floating HUD for Earners */}
-                    {user && (
-                        <div className="fixed bottom-10 left-10 bg-black text-white px-8 py-5 rounded-3xl shadow-2xl flex items-center gap-8 border border-gray-800 z-[500] animate-slide-up">
-                            <div>
-                                <p className="text-[9px] font-black text-gray-500 uppercase tracking-[0.2em] mb-1 leading-none">Net Earnings</p>
-                                <p className="text-xl font-[950] leading-none">$2,450.00</p>
-                            </div>
-                            <div className="w-px h-8 bg-gray-800"></div>
-                            <div>
-                                <p className="text-[9px] font-black text-gray-500 uppercase tracking-[0.2em] mb-1 leading-none">Open Bounties</p>
-                                <p className="text-xl font-[950] leading-none">12</p>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            );
-        };
-
-        // --- 8. INITIALIZE DOM ---
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+            showSlide(currentSlide);
+        });
     </script>
+
 </body>
 </html>
