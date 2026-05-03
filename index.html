@@ -3,317 +3,901 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Investor Gadget Inc. - Pitch Deck</title>
+    <title>SideQuest | Get It Done. Get Paid.</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .slide {
-            display: none;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        .active-slide {
-            display: flex;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        /* Professional color variables */
         :root {
-            --primary-bg: #0a192f;      /* Deep Navy Blue */
-            --secondary-bg: #172a45;    /* Lighter Navy */
-            --accent-gold: #ffc107;     /* Gold/Amber */
-            --text-primary: #ccd6f6;    /* Light Slate */
-            --text-secondary: #8892b0;  /* Slate */
-            --highlight: #ffffff;       /* White */
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --surface2: #1e1e1e;
+            --border: #2a2a2a;
+            --accent: #f0e040;
+            --accent2: #40e0b0;
+            --text: #f0f0f0;
+            --muted: #888;
+            --danger: #ff4444;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        h1,h2,h3,h4,h5 { font-family: 'Syne', sans-serif; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+        /* Nav */
+        .nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            height: 64px;
+            background: rgba(10,10,10,0.92);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center;
+            padding: 0 2rem;
+            gap: 2rem;
+        }
+        .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
+        .logo-dot { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; display: inline-block; }
+        .nav-links { display: flex; gap: 0.25rem; flex: 1; justify-content: center; }
+        .nav-btn { background: none; border: none; color: var(--muted); font-family: 'Syne', sans-serif; font-weight: 600; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+        .nav-btn:hover { color: var(--text); background: var(--surface); }
+        .nav-btn.active { color: var(--bg); background: var(--accent); }
+        .nav-auth { display: flex; align-items: center; gap: 1rem; margin-left: auto; }
+
+        /* Buttons */
+        .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.65rem 1.4rem; border-radius: 10px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.82rem; letter-spacing: 0.04em; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; }
+        .btn-primary { background: var(--accent); color: var(--bg); }
+        .btn-primary:hover { background: #ffe800; transform: translateY(-1px); }
+        .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+        .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+        .btn-ghost:hover { color: var(--text); border-color: var(--text); }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-sm { padding: 0.45rem 1rem; font-size: 0.76rem; }
+        .btn-lg { padding: 0.9rem 2rem; font-size: 0.92rem; }
+
+        /* Cards */
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; }
+        .card:hover { border-color: #3a3a3a; }
+
+        /* Task cards */
+        .task-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; cursor: pointer; transition: all 0.25s; }
+        .task-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(240,224,64,0.08); }
+
+        /* Reward badge */
+        .reward { background: var(--accent); color: var(--bg); font-family: 'Syne', sans-serif; font-weight: 800; padding: 0.3rem 0.8rem; border-radius: 8px; font-size: 1.1rem; }
+
+        /* Category pill */
+        .cat-pill { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.25rem 0.75rem; border-radius: 20px; border: 1px solid var(--border); color: var(--muted); }
+        .cat-pill.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+        /* Status badges */
+        .status-open { background: rgba(64,224,176,0.15); color: var(--accent2); border: 1px solid rgba(64,224,176,0.3); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 6px; }
+        .status-taken { background: rgba(255,165,0,0.15); color: #ffa500; border: 1px solid rgba(255,165,0,0.3); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 6px; }
+        .status-done { background: rgba(100,200,100,0.15); color: #64c864; border: 1px solid rgba(100,200,100,0.3); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 6px; }
+
+        /* Form inputs */
+        .input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem 1rem; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.92rem; outline: none; transition: border 0.2s; }
+        .input:focus { border-color: var(--accent); }
+        .input::placeholder { color: var(--muted); }
+        select.input { cursor: pointer; }
+        textarea.input { resize: vertical; min-height: 100px; }
+        .label { font-family: 'Syne', sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; display: block; }
+
+        /* Chat */
+        .chat-wrap { position: fixed; bottom: 1.5rem; right: 1.5rem; width: 380px; height: 560px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; display: flex; flex-direction: column; z-index: 500; box-shadow: 0 20px 60px rgba(0,0,0,0.5); overflow: hidden; }
+        .chat-header { background: var(--surface2); border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
+        .chat-bubble { max-width: 78%; padding: 0.65rem 1rem; border-radius: 14px; font-size: 0.86rem; line-height: 1.5; }
+        .chat-bubble.mine { background: var(--accent); color: var(--bg); border-bottom-right-radius: 4px; align-self: flex-end; font-weight: 500; }
+        .chat-bubble.theirs { background: var(--surface2); color: var(--text); border-bottom-left-radius: 4px; align-self: flex-start; }
+        .chat-input-row { border-top: 1px solid var(--border); padding: 0.75rem; display: flex; gap: 0.5rem; }
+        .chat-input { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 0.6rem 0.9rem; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.86rem; outline: none; }
+        .chat-input:focus { border-color: var(--accent); }
+
+        /* Modal overlay */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+        .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
+
+        /* Stars */
+        .star { cursor: pointer; font-size: 1.4rem; color: var(--border); transition: color 0.15s; }
+        .star.lit { color: var(--accent); }
+
+        /* Avatar */
+        .avatar { border-radius: 10px; object-fit: cover; background: var(--surface2); }
+
+        /* Online dot */
+        .online-dot { width: 9px; height: 9px; background: var(--accent2); border-radius: 50%; display: inline-block; box-shadow: 0 0 6px var(--accent2); }
+
+        /* Animations */
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-up { animation: fadeUp 0.4s ease forwards; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .pulse { animation: pulse 2s infinite; }
+
+        /* Hero */
+        .hero-bg { background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(240,224,64,0.12), transparent); }
+
+        /* Grid */
+        .task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; }
+
+        /* Profile */
+        .profile-grid { display: grid; grid-template-columns: 300px 1fr; gap: 1.5rem; }
+
+        /* Stat box */
+        .stat-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; text-align: center; }
+        .stat-num { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--accent); }
+        .stat-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-top: 0.2rem; }
+
+        /* Divider */
+        .divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+
+        /* Scrollable cat row */
+        .cat-row { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.25rem; }
+        .cat-row::-webkit-scrollbar { display: none; }
+
+        /* Search bar */
+        .search-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0.75rem 1.25rem; display: flex; align-items: center; gap: 0.75rem; max-width: 520px; width: 100%; }
+        .search-bar input { flex: 1; background: none; border: none; outline: none; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.92rem; }
+        .search-bar input::placeholder { color: var(--muted); }
+
+        /* Review card */
+        .review-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; }
+
+        /* Notification dot */
+        .notif-dot { width: 8px; height: 8px; background: var(--danger); border-radius: 50%; position: absolute; top: -2px; right: -2px; }
+
+        @media (max-width: 768px) {
+            .profile-grid { grid-template-columns: 1fr; }
+            .chat-wrap { width: calc(100vw - 2rem); right: 1rem; }
+            .nav-links { display: none; }
         }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-4 overflow-hidden" style="background-color: var(--primary-bg);">
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
 
-    <!-- Slide Container -->
-    <div id="slideshow-container" class="w-full max-w-5xl h-[550px] md:h-[600px] bg-gradient-to-br from-[#172a45] to-[#0a192f] rounded-2xl shadow-2xl flex flex-col p-6 border border-[#233554]">
-        
-        <!-- Slide Content Area -->
-        <div class="flex-grow flex items-center justify-center text-white" style="color: var(--text-primary);">
+// ── SUPABASE ──────────────────────────────────────────────────────────────────
+const SUPABASE_URL  = 'https://rmajagnleibmlmcktpae.supabase.co';
+const SUPABASE_KEY  = 'sb_publishable_egu0MKgcW8jm0IpG9PQbgQ_5ClCWNNf';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-            <!-- Slide 1: Title -->
-            <div id="slide-1" class="slide active-slide flex-col items-center justify-center text-center w-full px-4">
-                <h1 class="text-5xl md:text-7xl font-extrabold" style="color: var(--highlight);">Investor Gadget Inc.</h1>
-                <p class="mt-4 text-xl md:text-2xl max-w-3xl" style="color: var(--text-primary);">Saving companies money by saving employees money.</p>
-                <div class="mt-12 pt-8 border-t" style="border-color: #233554;">
-                    <p class="text-lg font-semibold" style="color: var(--highlight);">Mike Legacy, Founder</p>
-                    <p class="text-md" style="color: var(--text-secondary);">June 16, 2025</p>
-                </div>
-            </div>
+// ── CATEGORIES ────────────────────────────────────────────────────────────────
+const CATS = ['All','Errands','Moving','Pets','Cleaning','Handyman','Delivery','Yard Work','Tech Help','Other'];
 
-            <!-- Slide 2: The Problem -->
-            <div id="slide-2" class="slide flex-col items-center justify-center text-center w-full px-4">
-                <h2 class="text-4xl md:text-5xl font-bold text-center mb-2" style="color: var(--highlight);">The Core Operational Drain: Financial Stress</h2>
-                <p class="text-lg mb-10" style="color: var(--text-secondary);">Employee financial pressure creates a massive, recurring cost to your business.</p>
-                <div class="grid md:grid-cols-2 gap-8 w-full max-w-4xl text-left">
-                    <div class="p-6 rounded-lg border" style="background-color: var(--secondary-bg); border-color: #233554;">
-                        <h3 class="text-lg font-semibold" style="color: var(--accent-gold);">The "Small" Raise</h3>
-                        <p class="text-4xl font-bold mt-2" style="color: var(--highlight);">$2,080 / Year</p>
-                        <p style="color: var(--text-primary);">The annual cost of a minimal <span class="font-bold text-white">$1/hour</span> raise per employee.</p>
-                    </div>
-                    <div class="p-6 rounded-lg border" style="background-color: var(--secondary-bg); border-color: #233554;">
-                        <h3 class="text-lg font-semibold" style="color: var(--accent-gold);">The Realistic Raise</h3>
-                        <p class="text-4xl font-bold mt-2" style="color: var(--highlight);">$10,000 / Year</p>
-                        <p style="color: var(--text-primary);">A more typical request, costing nearly <span class="font-bold text-white">5x</span> that amount.</p>
-                    </div>
-                </div>
-                 <p class="mt-8 text-lg" style="color: var(--text-primary);">This directly impacts turnover, productivity, and overall budget stability.</p>
-            </div>
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+const ago = (ts) => {
+    const s = Math.floor((Date.now() - new Date(ts)) / 1000);
+    if (s < 60) return 'just now';
+    if (s < 3600) return `${Math.floor(s/60)}m ago`;
+    if (s < 86400) return `${Math.floor(s/3600)}h ago`;
+    return `${Math.floor(s/86400)}d ago`;
+};
+const stars = (n) => '★'.repeat(n) + '☆'.repeat(5-n);
+const avatarUrl = (seed) => `https://api.dicebear.com/7.x/thumbs/svg?seed=${seed}&backgroundColor=1e1e1e`;
 
-            <!-- Slide 3: The Solution -->
-            <div id="slide-3" class="slide flex-col items-center justify-center text-center w-full px-4">
-                 <h2 class="text-4xl md:text-5xl font-bold text-center mb-4" style="color: var(--highlight);">A Strategic Financial Wellness Program</h2>
-                 <p class="text-xl mb-10 max-w-3xl" style="color: var(--text-secondary);">A B2B service delivering a measurable Return on Investment.</p>
-                 <div class="flex flex-col md:flex-row gap-8 w-full max-w-4xl">
-                    <div class="p-6 rounded-lg border flex-1" style="background-color: var(--secondary-bg); border-color: #233554;">
-                        <h3 class="text-2xl font-bold mb-2" style="color: var(--accent-gold);">1-on-1 Professional Coaching</h3>
-                        <p style="color: var(--text-primary);">Confidential sessions with certified financial professionals to build personalized action plans.</p>
-                    </div>
-                    <div class="p-6 rounded-lg border flex-1" style="background-color: var(--secondary-bg); border-color: #233554;">
-                        <h3 class="text-2xl font-bold mb-2" style="color: var(--accent-gold);">"The Oracle" AI Platform</h3>
-                        <p style="color: var(--text-primary);">A 24/7 AI-powered chatbot, expertly programmed to provide instant financial guidance.</p>
-                    </div>
-                 </div>
-                 <p class="mt-8 text-lg font-semibold" style="color: var(--text-primary);">We empower your workforce to master their income, mitigating the cycle of pay increase requests.</p>
-            </div>
-            
-            <!-- Slide 4: Market Opportunity -->
-            <div id="slide-4" class="slide flex-col items-center justify-center text-center w-full px-4">
-                <h2 class="text-4xl md:text-5xl font-bold text-center mb-2" style="color: var(--highlight);">A Multi-Trillion Dollar Inefficiency</h2>
-                <p class="text-lg mb-8" style="color: var(--text-secondary);">The scale of this challenge presents a profound opportunity for cost savings.</p>
-                <div class="w-full max-w-4xl p-6 rounded-lg border" style="background-color: var(--primary-bg); border-color: #233554;">
-                    <p class="text-xl mb-4" style="color: var(--text-primary);">Total Workforce (Canada & US)</p>
-                    <p class="text-6xl font-extrabold" style="color: var(--accent-gold);">180 Million</p>
-                    <hr class="my-6" style="border-color: #233554;">
-                    <p class="text-xl mb-2" style="color: var(--text-primary);">Potential Annual Cost to Businesses</p>
-                    <div class="flex flex-col md:flex-row justify-around items-center mt-4">
-                         <div class="text-center mb-6 md:mb-0">
-                            <p class="text-4xl font-bold" style="color: var(--highlight);">$374 Billion</p>
-                            <p class="text-sm" style="color: var(--text-secondary);">(from minimal $1/hr raises)</p>
-                         </div>
-                         <div class="text-center">
-                            <p class="text-4xl font-bold" style="color: var(--accent-gold);">$1.8 Trillion</p>
-                            <p class="text-sm" style="color: var(--text-secondary);">(from typical $10k raises)</p>
-                         </div>
-                    </div>
-                </div>
-            </div>
+// ── MAIN APP ──────────────────────────────────────────────────────────────────
+function App() {
+    const [view, setView]           = useState('browse');
+    const [user, setUser]           = useState(null);
+    const [profile, setProfile]     = useState(null);
+    const [tasks, setTasks]         = useState([]);
+    const [search, setSearch]       = useState('');
+    const [cat, setCat]             = useState('All');
+    const [chat, setChat]           = useState(null);   // active task for chat
+    const [modal, setModal]         = useState(null);   // 'login' | 'signup' | 'task' | 'review' | {type:'detail', task}
+    const [loading, setLoading]     = useState(true);
+    const [authError, setAuthError] = useState('');
 
-            <!-- Slide 5: How It Works -->
-            <div id="slide-5" class="slide flex-col items-center justify-center text-center w-full px-4">
-                <h2 class="text-4xl md:text-5xl font-bold text-center mb-10" style="color: var(--highlight);">Our 3-Step Empowerment Process</h2>
-                <div class="flex flex-col md:flex-row justify-between w-full max-w-5xl space-y-8 md:space-y-0 md:space-x-8">
-                    <div class="flex-1 text-center">
-                        <div class="border-2 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 font-bold text-2xl" style="border-color: var(--accent-gold); color: var(--accent-gold);">1</div>
-                        <h3 class="text-2xl font-bold mb-2" style="color: var(--highlight);">Assess</h3>
-                        <p style="color: var(--text-secondary);">Employees complete a confidential online assessment to establish their "Financial Score."</p>
-                    </div>
-                    <div class="flex-1 text-center">
-                        <div class="border-2 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 font-bold text-2xl" style="border-color: var(--accent-gold); color: var(--accent-gold);">2</div>
-                        <h3 class="text-2xl font-bold mb-2" style="color: var(--highlight);">Consult</h3>
-                        <p style="color: var(--text-secondary);">A mandatory 30-minute virtual session with our experts builds a personalized strategy.</p>
-                    </div>
-                    <div class="flex-1 text-center">
-                        <div class="border-2 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 font-bold text-2xl" style="border-color: var(--accent-gold); color: var(--accent-gold);">3</div>
-                        <h3 class="text-2xl font-bold mb-2" style="color: var(--highlight);">Empower</h3>
-                        <p style="color: var(--text-secondary);">Full access to "The Oracle" AI, resource libraries, and continuous professional support.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Slide 6: Competitive Advantage -->
-            <div id="slide-6" class="slide flex-col items-center justify-center w-full px-4">
-                <h2 class="text-4xl md:text-5xl font-bold text-center mb-10" style="color: var(--highlight);">Our Strategic Differentiators</h2>
-                <ul class="space-y-6 w-full max-w-3xl">
-                    <li class="p-6 rounded-lg border-l-4" style="background-color: var(--secondary-bg); border-color: var(--accent-gold);">
-                        <h3 class="text-xl font-bold" style="color: var(--highlight);">Direct & Measurable ROI</h3>
-                        <p class="mt-1" style="color: var(--text-primary);">Our program is explicitly designed to be self-funding by reducing payroll inflation.</p>
-                    </li>
-                    <li class="p-6 rounded-lg border-l-4" style="background-color: var(--secondary-bg); border-color: var(--accent-gold);">
-                        <h3 class="text-xl font-bold" style="color: var(--highlight);">Mandatory Onboarding Engagement</h3>
-                        <p class="mt-1" style="color: var(--text-primary);">The required 1-on-1 consultation guarantees adoption and immediate value.</p>
-                    </li>
-                    <li class="p-6 rounded-lg border-l-4" style="background-color: var(--secondary-bg); border-color: var(--accent-gold);">
-                        <h3 class="text-xl font-bold" style="color: var(--highlight);">Professional & Accessible Branding</h3>
-                        <p class="mt-1" style="color: var(--text-primary);">"Investor Gadget" and "The Oracle" are intuitive, memorable, and non-intimidating.</p>
-                    </li>
-                </ul>
-            </div>
-            
-            <!-- Slide 7: Go-To-Market Strategy -->
-            <div id="slide-7" class="slide flex-col items-center justify-center w-full px-4">
-                <h2 class="text-4xl md:text-5xl font-bold text-center mb-10" style="color: var(--highlight);">Our Go-To-Market Strategy</h2>
-                <div class="w-full max-w-2xl space-y-4">
-                    <div class="p-4 rounded-lg" style="background-color: var(--secondary-bg);">
-                        <h3 class="font-bold" style="color: var(--accent-gold);">Phase 1: Executive Outreach</h3>
-                        <p style="color: var(--text-primary);">Targeted engagement with C-Suite and HR leaders at major North American corporations.</p>
-                    </div>
-                    <div class="p-4 rounded-lg" style="background-color: var(--secondary-bg);">
-                        <h3 class="font-bold" style="color: var(--accent-gold);">Phase 2: Secure Paid Pilots</h3>
-                        <p style="color: var(--text-primary);">Launch 3-5 pilot programs to generate case studies and quantifiable ROI data.</p>
-                    </div>
-                    <div class="p-4 rounded-lg" style="background-color: var(--secondary-bg);">
-                        <h3 class="font-bold" style="color: var(--accent-gold);">Phase 3: Data-Driven Expansion</h3>
-                        <p style="color: var(--text-primary);">Leverage proven results to fuel broad market penetration and secure enterprise contracts.</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Slide 8: The Team -->
-            <div id="slide-8" class="slide flex-col items-center justify-center w-full px-4">
-                <h2 class="text-4xl md:text-5xl font-bold text-center mb-10" style="color: var(--highlight);">Leadership & Execution Team</h2>
-                <div class="w-full max-w-3xl">
-                    <div class="text-center mb-8 p-6 rounded-lg border" style="background-color: var(--secondary-bg); border-color: #233554;">
-                        <h3 class="text-2xl font-bold" style="color: var(--highlight);">Mike Legacy</h3>
-                        <p class="font-semibold" style="color: var(--accent-gold);">Founder & Visionary</p>
-                    </div>
-                    <h4 class="text-center text-xl font-semibold mb-4" style="color: var(--highlight);">Key Hires (Post-Funding)</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center" style="color: var(--text-primary);">
-                        <div class="p-4 rounded-lg" style="background-color: var(--secondary-bg);"><p>Lead Software Developer</p></div>
-                        <div class="p-4 rounded-lg" style="background-color: var(--secondary-bg);"><p>Certified Financial Professionals</p></div>
-                        <div class="p-4 rounded-lg" style="background-color: var(--secondary-bg);"><p>B2B Sales & Marketing Lead</p></div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Slide 9: The Ask -->
-            <div id="slide-9" class="slide flex-col items-center justify-around w-full px-4">
-                 <h2 class="text-4xl md:text-5xl font-bold text-center" style="color: var(--highlight);">Seed Funding Request</h2>
-                 <p class="text-6xl font-extrabold" style="color: var(--accent-gold);">$500,000 CAD</p>
-                 <div class="w-full max-w-2xl">
-                     <h3 class="text-lg font-semibold text-center mb-2" style="color: var(--highlight);">Use of Funds</h3>
-                     <div class="rounded-full h-8 w-full flex overflow-hidden border" style="background-color: var(--secondary-bg); border-color: #233554;">
-                         <div class="h-full" style="width: 40%; background-color: var(--accent-gold);" title="Technology"></div>
-                         <div class="h-full" style="width: 30%; background-color: rgba(255, 193, 7, 0.7);" title="Personnel"></div>
-                         <div class="h-full" style="width: 20%; background-color: rgba(255, 193, 7, 0.5);" title="Sales & Marketing"></div>
-                         <div class="h-full" style="width: 10%; background-color: rgba(255, 193, 7, 0.3);" title="Operations"></div>
-                     </div>
-                     <div class="flex justify-between text-sm mt-2 px-2" style="color: var(--text-secondary);">
-                         <span>40% Technology</span>
-                         <span>30% Personnel</span>
-                         <span>20% Marketing</span>
-                         <span>10% Operations</span>
-                     </div>
-                 </div>
-                 <p class="text-xl font-semibold text-center" style="color: var(--text-primary);">For an equity stake in a disruptive, high-growth venture.</p>
-            </div>
-
-            <!-- Slide 10: Financial Projections -->
-             <div id="slide-10" class="slide flex-col items-center justify-center w-full px-4">
-                <h2 class="text-4xl md:text-5xl font-bold text-center mb-10" style="color: var(--highlight);">Growth & Revenue Trajectory</h2>
-                <div class="w-full max-w-4xl space-y-6">
-                    <div class="text-center p-4 rounded-lg" style="background-color: var(--secondary-bg);">
-                        <p class="text-lg" style="color: var(--text-secondary);">Revenue Model</p>
-                        <p class="text-2xl font-bold" style="color: var(--highlight);">Tiered B2B SaaS Subscription</p>
-                    </div>
-                    <div class="grid md:grid-cols-3 gap-6 text-center">
-                        <div class="border p-6 rounded-lg" style="border-color: #233554;">
-                            <h3 class="text-2xl font-bold" style="color: var(--accent-gold);">Year 1</h3>
-                            <p class="text-xl font-semibold mt-2" style="color: var(--highlight);">3 Pilot Programs</p>
-                            <p style="color: var(--text-secondary);">10,000 employees</p>
-                        </div>
-                        <div class="border p-6 rounded-lg" style="border-color: #233554;">
-                            <h3 class="text-2xl font-bold" style="color: var(--accent-gold);">Year 3</h3>
-                            <p class="text-xl font-semibold mt-2" style="color: var(--highlight);">50,000+ Subscribers</p>
-                            <p style="color: var(--text-secondary);">Market Expansion</p>
-                        </div>
-                         <div class="border p-6 rounded-lg" style="border-color: #233554;">
-                            <h3 class="text-2xl font-bold" style="color: var(--accent-gold);">Year 5</h3>
-                            <p class="text-xl font-semibold mt-2" style="color: var(--highlight);">250,000+ Subscribers</p>
-                            <p style="color: var(--text-secondary);">Market Leadership</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Slide 11: Contact -->
-            <div id="slide-11" class="slide flex-col items-center justify-center text-center w-full px-4">
-                <h2 class="text-5xl md:text-6xl font-bold" style="color: var(--highlight);">Thank You</h2>
-                <p class="mt-4 text-xl font-semibold max-w-2xl" style="color: var(--accent-gold);">Let's partner to build more profitable and stable companies.</p>
-                <div class="mt-10 pt-10 border-t text-lg" style="border-color: #233554;">
-                    <p class="font-bold" style="color: var(--highlight);">Mike Legacy, Founder</p>
-                    <p style="color: var(--text-secondary);">investorgadgetinc@gmail.com</p>
-                    <a href="https://www.linkedin.com/in/mikedonlegacy/" target="_blank" class="hover:underline" style="color: var(--accent-gold);">linkedin.com/in/mikedonlegacy</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Navigation -->
-        <div class="flex-shrink-0 flex items-center justify-between pt-4 mt-4 border-t" style="border-color: #233554;">
-            <button id="prev-btn" class="font-bold py-2 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed" style="background-color: var(--secondary-bg); color: var(--text-primary);">
-                Prev
-            </button>
-            <div id="slide-counter" class="font-medium" style="color: var(--text-secondary);">
-                1 / 11
-            </div>
-            <button id="next-btn" class="text-gray-900 font-bold py-2 px-6 rounded-lg transition-colors" style="background-color: var(--accent-gold);">
-                Next
-            </button>
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            let currentSlide = 1;
-            const totalSlides = 11;
-            
-            const slides = document.querySelectorAll('.slide');
-            const prevBtn = document.getElementById('prev-btn');
-            const nextBtn = document.getElementById('next-btn');
-            const slideCounter = document.getElementById('slide-counter');
-
-            function showSlide(slideNumber) {
-                slides.forEach(slide => {
-                    slide.classList.remove('active-slide');
-                });
-
-                const newSlide = document.getElementById(`slide-${slideNumber}`);
-                if (newSlide) {
-                    newSlide.classList.add('active-slide');
-                }
-
-                slideCounter.textContent = `${slideNumber} / ${totalSlides}`;
-                
-                prevBtn.disabled = slideNumber === 1;
-                nextBtn.disabled = slideNumber === totalSlides;
-            }
-
-            prevBtn.addEventListener('click', () => {
-                if (currentSlide > 1) {
-                    currentSlide--;
-                    showSlide(currentSlide);
-                }
-            });
-
-            nextBtn.addEventListener('click', () => {
-                if (currentSlide < totalSlides) {
-                    currentSlide++;
-                    showSlide(currentSlide);
-                }
-            });
-            
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'ArrowRight' && !nextBtn.disabled) {
-                    nextBtn.click();
-                } else if (e.key === 'ArrowLeft' && !prevBtn.disabled) {
-                    prevBtn.click();
-                }
-            });
-
-            showSlide(currentSlide);
+    // ── Auth init ──
+    useEffect(() => {
+        sb.auth.getSession().then(({ data: { session } }) => {
+            if (session?.user) fetchProfile(session.user);
+            else setLoading(false);
         });
-    </script>
+        sb.auth.onAuthStateChange((_e, session) => {
+            if (session?.user) fetchProfile(session.user);
+            else { setUser(null); setProfile(null); }
+        });
+    }, []);
 
+    useEffect(() => { fetchTasks(); }, []);
+
+    // ── Fetch profile ──
+    const fetchProfile = async (u) => {
+        setUser(u);
+        const { data } = await sb.from('profiles').select('*').eq('id', u.id).single();
+        if (data) setProfile(data);
+        else {
+            // Create profile if missing
+            const np = { id: u.id, username: u.email.split('@')[0], full_name: u.user_metadata?.full_name || '', avatar_seed: u.id, bio: '', created_at: new Date().toISOString() };
+            await sb.from('profiles').insert(np);
+            setProfile(np);
+        }
+        setLoading(false);
+    };
+
+    // ── Fetch tasks ──
+    const fetchTasks = async () => {
+        const { data } = await sb.from('tasks').select('*, profiles(username, avatar_seed, full_name)').order('created_at', { ascending: false });
+        setTasks(data || []);
+    };
+
+    // ── Auth handlers ──
+    const handleSignup = async ({ email, password, username, full_name }) => {
+        setAuthError('');
+        const { data, error } = await sb.auth.signUp({ email, password, options: { data: { full_name } } });
+        if (error) { setAuthError(error.message); return; }
+        if (data.user) {
+            const np = { id: data.user.id, username, full_name, avatar_seed: data.user.id, bio: '', created_at: new Date().toISOString() };
+            await sb.from('profiles').insert(np);
+        }
+        setModal(null);
+    };
+
+    const handleLogin = async ({ email, password }) => {
+        setAuthError('');
+        const { error } = await sb.auth.signInWithPassword({ email, password });
+        if (error) { setAuthError(error.message); return; }
+        setModal(null);
+    };
+
+    const handleGoogleLogin = () => {
+        sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
+    };
+
+    const handleSignOut = async () => {
+        await sb.auth.signOut();
+        setUser(null); setProfile(null); setView('browse');
+    };
+
+    // ── Post task ──
+    const handlePostTask = async (form) => {
+        if (!user) { setModal('login'); return; }
+        const { error } = await sb.from('tasks').insert({
+            title: form.title, description: form.description,
+            reward: parseFloat(form.reward), category: form.category,
+            location: form.location, user_id: user.id, status: 'open',
+            created_at: new Date().toISOString()
+        });
+        if (error) { alert('Error: ' + error.message); return; }
+        await fetchTasks();
+        setView('browse');
+    };
+
+    // ── Accept task ──
+    const handleAccept = async (task) => {
+        if (!user) { setModal('login'); return; }
+        if (task.user_id === user.id) { alert("You can't accept your own task."); return; }
+        // Update task status
+        await sb.from('tasks').update({ status: 'taken', accepted_by: user.id }).eq('id', task.id);
+        await fetchTasks();
+        // Open chat
+        setChat(task);
+        setModal(null);
+    };
+
+    // ── Mark complete ──
+    const handleComplete = async (taskId) => {
+        await sb.from('tasks').update({ status: 'done' }).eq('id', taskId);
+        await fetchTasks();
+    };
+
+    // ── Submit review ──
+    const handleReview = async ({ task_id, reviewed_id, rating, comment }) => {
+        if (!user) return;
+        await sb.from('reviews').insert({ task_id, reviewer_id: user.id, reviewed_id, rating, comment, created_at: new Date().toISOString() });
+        setModal(null);
+        alert('Review submitted!');
+    };
+
+    // ── Filtered tasks ──
+    const filtered = tasks.filter(t => {
+        const matchCat = cat === 'All' || t.category === cat;
+        const matchSearch = !search || t.title.toLowerCase().includes(search.toLowerCase()) || t.description?.toLowerCase().includes(search.toLowerCase()) || t.location?.toLowerCase().includes(search.toLowerCase());
+        return matchCat && matchSearch;
+    });
+
+    if (loading) return (
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100vh', flexDirection:'column', gap:'1rem' }}>
+            <div style={{ fontFamily:'Syne', fontSize:'1.5rem', fontWeight:800 }}>SideQuest<span style={{color:'var(--accent)'}}>.</span></div>
+            <div style={{ color:'var(--muted)', fontSize:'0.85rem' }} className="pulse">Loading...</div>
+        </div>
+    );
+
+    return (
+        <div style={{ paddingTop: '64px' }}>
+            {/* NAV */}
+            <nav className="nav">
+                <div className="logo" onClick={() => setView('browse')}>
+                    <span className="logo-dot"></span>SideQuest
+                </div>
+                <div className="nav-links">
+                    {[['browse','Browse Tasks'],['post','Post a Task'],['my-tasks','My Tasks']].map(([k,l]) => (
+                        <button key={k} className={`nav-btn ${view===k?'active':''}`} onClick={() => {
+                            if ((k==='post'||k==='my-tasks') && !user) { setModal('login'); return; }
+                            setView(k);
+                        }}>{l}</button>
+                    ))}
+                </div>
+                <div className="nav-auth">
+                    {user ? (
+                        <>
+                            <button className="btn btn-ghost btn-sm" onClick={() => setView('profile')}>
+                                <img src={avatarUrl(profile?.avatar_seed || user.id)} width="22" height="22" className="avatar" alt="" />
+                                {profile?.username || 'Profile'}
+                            </button>
+                            <button className="btn btn-ghost btn-sm" onClick={handleSignOut}>Sign Out</button>
+                        </>
+                    ) : (
+                        <>
+                            <button className="btn btn-ghost btn-sm" onClick={() => { setAuthError(''); setModal('login'); }}>Log In</button>
+                            <button className="btn btn-primary btn-sm" onClick={() => { setAuthError(''); setModal('signup'); }}>Sign Up</button>
+                        </>
+                    )}
+                </div>
+            </nav>
+
+            {/* VIEWS */}
+            {view === 'browse'    && <BrowseView tasks={filtered} search={search} setSearch={setSearch} cat={cat} setCat={setCat} setModal={setModal} user={user} setChat={setChat} handleAccept={handleAccept} handleComplete={handleComplete} currentUserId={user?.id} />}
+            {view === 'post'      && <PostView onSubmit={handlePostTask} />}
+            {view === 'my-tasks'  && <MyTasksView user={user} profile={profile} tasks={tasks} setModal={setModal} handleComplete={handleComplete} setChat={setChat} fetchTasks={fetchTasks} />}
+            {view === 'profile'   && <ProfileView user={user} profile={profile} setProfile={setProfile} tasks={tasks} onSignOut={handleSignOut} />}
+
+            {/* CHAT */}
+            {chat && <ChatPanel task={chat} user={user} onClose={() => setChat(null)} />}
+
+            {/* MODALS */}
+            {modal === 'login'  && <LoginModal onLogin={handleLogin} onGoogle={handleGoogleLogin} onSwitch={() => { setAuthError(''); setModal('signup'); }} onClose={() => setModal(null)} error={authError} />}
+            {modal === 'signup' && <SignupModal onSignup={handleSignup} onGoogle={handleGoogleLogin} onSwitch={() => { setAuthError(''); setModal('login'); }} onClose={() => setModal(null)} error={authError} />}
+            {modal?.type === 'detail' && <TaskDetailModal task={modal.task} user={user} onClose={() => setModal(null)} onAccept={handleAccept} onComplete={handleComplete} onReview={() => setModal({ type:'review', task: modal.task })} onChat={() => { setChat(modal.task); setModal(null); }} />}
+            {modal?.type === 'review' && <ReviewModal task={modal.task} user={user} onSubmit={handleReview} onClose={() => setModal(null)} />}
+        </div>
+    );
+}
+
+// ── BROWSE VIEW ───────────────────────────────────────────────────────────────
+function BrowseView({ tasks, search, setSearch, cat, setCat, setModal, user, setChat, handleAccept, handleComplete, currentUserId }) {
+    return (
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '2rem 1.5rem' }}>
+            {/* Hero */}
+            <div className="hero-bg fade-up" style={{ textAlign:'center', padding:'3rem 1rem 2.5rem', marginBottom:'2rem' }}>
+                <h1 style={{ fontSize:'clamp(2.2rem,5vw,3.8rem)', fontWeight:800, lineHeight:1.1, marginBottom:'1rem' }}>
+                    Pick Up a Task.<br/>
+                    <span style={{ color:'var(--accent)' }}>Get Paid.</span>
+                </h1>
+                <p style={{ color:'var(--muted)', fontSize:'1.05rem', marginBottom:'2rem', maxWidth:520, margin:'0 auto 2rem' }}>
+                    People near you need help with everyday tasks — dog walking, moving furniture, yard work, and more. Accept a task, complete it, collect your reward.
+                </p>
+                <div style={{ display:'flex', justifyContent:'center', gap:'1rem', flexWrap:'wrap' }}>
+                    <div className="search-bar" style={{ margin:'0 auto' }}>
+                        <span style={{ color:'var(--muted)', fontSize:'1.1rem' }}>🔍</span>
+                        <input placeholder="Search tasks, locations..." value={search} onChange={e => setSearch(e.target.value)} />
+                        {search && <button onClick={() => setSearch('')} style={{ background:'none', border:'none', color:'var(--muted)', cursor:'pointer', fontSize:'1.1rem' }}>✕</button>}
+                    </div>
+                </div>
+            </div>
+
+            {/* Category filter */}
+            <div className="cat-row" style={{ marginBottom:'1.5rem' }}>
+                {CATS.map(c => (
+                    <button key={c} className={`cat-pill ${cat===c?'active':''}`} onClick={() => setCat(c)}>{c}</button>
+                ))}
+            </div>
+
+            {/* Stats bar */}
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.25rem' }}>
+                <p style={{ color:'var(--muted)', fontSize:'0.85rem' }}>
+                    <span style={{ color:'var(--text)', fontWeight:600 }}>{tasks.length}</span> tasks available
+                </p>
+                <div style={{ display:'flex', gap:'0.75rem', alignItems:'center' }}>
+                    <span className="online-dot"></span>
+                    <span style={{ color:'var(--muted)', fontSize:'0.8rem' }}>Live</span>
+                </div>
+            </div>
+
+            {/* Task grid */}
+            {tasks.length === 0 ? (
+                <div style={{ textAlign:'center', padding:'5rem 1rem', color:'var(--muted)' }}>
+                    <div style={{ fontSize:'3rem', marginBottom:'1rem' }}>📭</div>
+                    <h3 style={{ marginBottom:'0.5rem' }}>No tasks found</h3>
+                    <p style={{ fontSize:'0.9rem' }}>Be the first to post something!</p>
+                </div>
+            ) : (
+                <div className="task-grid">
+                    {tasks.map((task, i) => (
+                        <TaskCard key={task.id} task={task} style={{ animationDelay: `${i*0.05}s` }}
+                            onClick={() => setModal({ type:'detail', task })}
+                            onAccept={() => handleAccept(task)}
+                            onComplete={() => handleComplete(task.id)}
+                            onChat={() => setChat(task)}
+                            currentUserId={currentUserId}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
+// ── TASK CARD ─────────────────────────────────────────────────────────────────
+function TaskCard({ task, onClick, onAccept, onComplete, onChat, currentUserId, style }) {
+    const isOwner   = currentUserId === task.user_id;
+    const isWorker  = currentUserId === task.accepted_by;
+    return (
+        <div className="task-card fade-up" style={style} onClick={onClick}>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'0.75rem' }}>
+                <span className={`status-${task.status||'open'}`}>{task.status||'open'}</span>
+                <span className="reward">${task.reward}</span>
+            </div>
+            <h3 style={{ fontSize:'1.1rem', fontWeight:700, marginBottom:'0.4rem', lineHeight:1.3 }}>{task.title}</h3>
+            <p style={{ color:'var(--muted)', fontSize:'0.85rem', lineHeight:1.5, marginBottom:'1rem', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' }}>
+                {task.description}
+            </p>
+            <div style={{ display:'flex', gap:'0.5rem', marginBottom:'1rem', flexWrap:'wrap' }}>
+                {task.category && <span className="cat-pill">{task.category}</span>}
+                {task.location && <span style={{ fontSize:'0.75rem', color:'var(--muted)' }}>📍 {task.location}</span>}
+            </div>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', borderTop:'1px solid var(--border)', paddingTop:'0.75rem' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:'0.5rem' }}>
+                    <img src={avatarUrl(task.profiles?.avatar_seed || task.user_id)} width="26" height="26" className="avatar" alt="" />
+                    <span style={{ fontSize:'0.78rem', color:'var(--muted)' }}>{task.profiles?.username || 'user'}</span>
+                    <span style={{ fontSize:'0.72rem', color:'var(--border)' }}>{ago(task.created_at)}</span>
+                </div>
+                {/* Action buttons — stop propagation so card click doesn't fire */}
+                <div style={{ display:'flex', gap:'0.4rem' }} onClick={e => e.stopPropagation()}>
+                    {task.status === 'open' && !isOwner && (
+                        <button className="btn btn-primary btn-sm" onClick={onAccept}>Accept</button>
+                    )}
+                    {task.status === 'taken' && (isOwner || isWorker) && (
+                        <>
+                            <button className="btn btn-secondary btn-sm" onClick={onChat}>Chat</button>
+                            {isOwner && <button className="btn btn-sm" style={{background:'var(--accent2)',color:'var(--bg)'}} onClick={() => onComplete(task.id)}>Mark Done</button>}
+                        </>
+                    )}
+                    {isOwner && task.status === 'open' && (
+                        <span style={{ fontSize:'0.72rem', color:'var(--muted)', alignSelf:'center' }}>Your task</span>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ── TASK DETAIL MODAL ─────────────────────────────────────────────────────────
+function TaskDetailModal({ task, user, onClose, onAccept, onComplete, onReview, onChat }) {
+    const isOwner  = user?.id === task.user_id;
+    const isWorker = user?.id === task.accepted_by;
+    return (
+        <div className="modal-overlay" onClick={onClose}>
+            <div className="modal" style={{ padding:'2rem' }} onClick={e => e.stopPropagation()}>
+                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'1.5rem' }}>
+                    <div>
+                        <span className={`status-${task.status||'open'}`} style={{ marginBottom:'0.5rem', display:'inline-block' }}>{task.status||'open'}</span>
+                        <h2 style={{ fontSize:'1.5rem', fontWeight:800, lineHeight:1.2 }}>{task.title}</h2>
+                    </div>
+                    <span className="reward" style={{ fontSize:'1.5rem' }}>${task.reward}</span>
+                </div>
+                <p style={{ color:'var(--muted)', lineHeight:1.7, marginBottom:'1.5rem' }}>{task.description}</p>
+                <div style={{ display:'flex', gap:'1rem', marginBottom:'1.5rem', flexWrap:'wrap' }}>
+                    {task.category && <div style={{ background:'var(--surface2)', border:'1px solid var(--border)', borderRadius:8, padding:'0.4rem 0.8rem', fontSize:'0.8rem' }}>📂 {task.category}</div>}
+                    {task.location && <div style={{ background:'var(--surface2)', border:'1px solid var(--border)', borderRadius:8, padding:'0.4rem 0.8rem', fontSize:'0.8rem' }}>📍 {task.location}</div>}
+                    <div style={{ background:'var(--surface2)', border:'1px solid var(--border)', borderRadius:8, padding:'0.4rem 0.8rem', fontSize:'0.8rem' }}>🕐 {ago(task.created_at)}</div>
+                </div>
+                <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', background:'var(--surface2)', border:'1px solid var(--border)', borderRadius:12, padding:'0.75rem 1rem', marginBottom:'1.5rem' }}>
+                    <img src={avatarUrl(task.profiles?.avatar_seed || task.user_id)} width="36" height="36" className="avatar" alt="" />
+                    <div>
+                        <div style={{ fontWeight:600, fontSize:'0.9rem' }}>{task.profiles?.full_name || task.profiles?.username || 'User'}</div>
+                        <div style={{ color:'var(--muted)', fontSize:'0.78rem' }}>@{task.profiles?.username}</div>
+                    </div>
+                </div>
+                <div style={{ display:'flex', gap:'0.75rem', flexWrap:'wrap' }}>
+                    {task.status === 'open' && !isOwner && (
+                        <button className="btn btn-primary btn-lg" onClick={() => onAccept(task)}>✅ Accept This Task</button>
+                    )}
+                    {(task.status === 'taken' || task.status === 'done') && (isOwner || isWorker) && (
+                        <button className="btn btn-secondary" onClick={onChat}>💬 Open Chat</button>
+                    )}
+                    {task.status === 'taken' && isOwner && (
+                        <button className="btn btn-sm" style={{background:'var(--accent2)',color:'var(--bg)'}} onClick={() => onComplete(task.id)}>Mark as Done</button>
+                    )}
+                    {task.status === 'done' && (isOwner || isWorker) && (
+                        <button className="btn btn-secondary" onClick={onReview}>⭐ Leave Review</button>
+                    )}
+                    <button className="btn btn-ghost" onClick={onClose}>Close</button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ── POST VIEW ─────────────────────────────────────────────────────────────────
+function PostView({ onSubmit }) {
+    const [form, setForm] = useState({ title:'', description:'', reward:'', category:'Errands', location:'' });
+    const set = (k,v) => setForm(f => ({ ...f, [k]:v }));
+    return (
+        <div style={{ maxWidth:600, margin:'0 auto', padding:'2.5rem 1.5rem' }} className="fade-up">
+            <h2 style={{ fontSize:'2rem', fontWeight:800, marginBottom:'0.5rem' }}>Post a Task</h2>
+            <p style={{ color:'var(--muted)', marginBottom:'2rem' }}>Describe what you need done and what you'll pay. Someone nearby will pick it up.</p>
+            <div className="card" style={{ padding:'2rem', display:'flex', flexDirection:'column', gap:'1.25rem' }}>
+                <div>
+                    <label className="label">Task Title</label>
+                    <input className="input" placeholder="e.g. Walk my dog for 30 minutes" value={form.title} onChange={e => set('title',e.target.value)} />
+                </div>
+                <div>
+                    <label className="label">Description</label>
+                    <textarea className="input" placeholder="Give details — when, where, any requirements..." value={form.description} onChange={e => set('description',e.target.value)} />
+                </div>
+                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1rem' }}>
+                    <div>
+                        <label className="label">Reward ($)</label>
+                        <input className="input" type="number" min="1" placeholder="20" value={form.reward} onChange={e => set('reward',e.target.value)} />
+                    </div>
+                    <div>
+                        <label className="label">Category</label>
+                        <select className="input" value={form.category} onChange={e => set('category',e.target.value)}>
+                            {CATS.filter(c=>c!=='All').map(c => <option key={c}>{c}</option>)}
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label className="label">Location / Area</label>
+                    <input className="input" placeholder="e.g. Downtown Moncton, NB" value={form.location} onChange={e => set('location',e.target.value)} />
+                </div>
+                <button className="btn btn-primary btn-lg" style={{ width:'100%', justifyContent:'center' }}
+                    onClick={() => {
+                        if (!form.title || !form.reward) { alert('Title and reward are required.'); return; }
+                        onSubmit(form);
+                    }}>
+                    🚀 Post Task
+                </button>
+            </div>
+        </div>
+    );
+}
+
+// ── MY TASKS VIEW ─────────────────────────────────────────────────────────────
+function MyTasksView({ user, tasks, setModal, handleComplete, setChat, fetchTasks }) {
+    if (!user) return null;
+    const myPosted   = tasks.filter(t => t.user_id === user.id);
+    const myAccepted = tasks.filter(t => t.accepted_by === user.id);
+
+    const deleteTask = async (id) => {
+        if (!confirm('Delete this task?')) return;
+        await sb.from('tasks').delete().eq('id', id);
+        fetchTasks();
+    };
+
+    const Section = ({ title, items, empty }) => (
+        <div style={{ marginBottom:'2.5rem' }}>
+            <h3 style={{ fontSize:'1.1rem', fontWeight:700, marginBottom:'1rem', color:'var(--muted)', textTransform:'uppercase', letterSpacing:'0.08em', fontSize:'0.8rem' }}>{title}</h3>
+            {items.length === 0 ? (
+                <div style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:12, padding:'2rem', textAlign:'center', color:'var(--muted)', fontSize:'0.9rem' }}>{empty}</div>
+            ) : (
+                <div style={{ display:'flex', flexDirection:'column', gap:'0.75rem' }}>
+                    {items.map(task => (
+                        <div key={task.id} className="card" style={{ padding:'1.25rem', display:'flex', justifyContent:'space-between', alignItems:'center', gap:'1rem', flexWrap:'wrap' }}>
+                            <div style={{ flex:1, minWidth:200 }}>
+                                <div style={{ display:'flex', gap:'0.5rem', alignItems:'center', marginBottom:'0.3rem', flexWrap:'wrap' }}>
+                                    <span className={`status-${task.status||'open'}`}>{task.status||'open'}</span>
+                                    <span style={{ fontWeight:600 }}>{task.title}</span>
+                                </div>
+                                <span style={{ color:'var(--accent)', fontWeight:700 }}>${task.reward}</span>
+                                {task.location && <span style={{ color:'var(--muted)', fontSize:'0.8rem', marginLeft:'0.75rem' }}>📍 {task.location}</span>}
+                            </div>
+                            <div style={{ display:'flex', gap:'0.5rem', flexWrap:'wrap' }}>
+                                {(task.status==='taken'||task.status==='done') && (
+                                    <button className="btn btn-secondary btn-sm" onClick={() => setChat(task)}>Chat</button>
+                                )}
+                                {task.status==='taken' && task.user_id===user.id && (
+                                    <button className="btn btn-sm" style={{background:'var(--accent2)',color:'var(--bg)'}} onClick={() => handleComplete(task.id)}>Mark Done</button>
+                                )}
+                                {task.status==='done' && (
+                                    <button className="btn btn-secondary btn-sm" onClick={() => setModal({ type:'review', task })}>Review</button>
+                                )}
+                                {task.user_id===user.id && task.status==='open' && (
+                                    <button className="btn btn-ghost btn-sm" style={{color:'var(--danger)',borderColor:'var(--danger)'}} onClick={() => deleteTask(task.id)}>Delete</button>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+
+    return (
+        <div style={{ maxWidth:800, margin:'0 auto', padding:'2.5rem 1.5rem' }} className="fade-up">
+            <h2 style={{ fontSize:'2rem', fontWeight:800, marginBottom:'2rem' }}>My Tasks</h2>
+            <Section title="Tasks I Posted" items={myPosted} empty="You haven't posted any tasks yet." />
+            <Section title="Tasks I Accepted" items={myAccepted} empty="You haven't accepted any tasks yet." />
+        </div>
+    );
+}
+
+// ── PROFILE VIEW ──────────────────────────────────────────────────────────────
+function ProfileView({ user, profile, setProfile, tasks, onSignOut }) {
+    const [editing, setEditing]   = useState(false);
+    const [form, setForm]         = useState({ full_name:'', bio:'', username:'' });
+    const [reviews, setReviews]   = useState([]);
+
+    useEffect(() => {
+        if (profile) setForm({ full_name: profile.full_name||'', bio: profile.bio||'', username: profile.username||'' });
+    }, [profile]);
+
+    useEffect(() => {
+        if (user) sb.from('reviews').select('*, profiles!reviewer_id(username,avatar_seed)').eq('reviewed_id', user.id).then(({ data }) => setReviews(data||[]));
+    }, [user]);
+
+    const saveProfile = async () => {
+        const { data } = await sb.from('profiles').update({ full_name: form.full_name, bio: form.bio, username: form.username }).eq('id', user.id).select().single();
+        if (data) setProfile(data);
+        setEditing(false);
+    };
+
+    if (!user || !profile) return null;
+
+    const myTasks    = tasks.filter(t => t.user_id === user.id);
+    const completed  = myTasks.filter(t => t.status === 'done').length;
+    const avgRating  = reviews.length ? (reviews.reduce((s,r) => s+r.rating,0)/reviews.length).toFixed(1) : '—';
+
+    return (
+        <div style={{ maxWidth:900, margin:'0 auto', padding:'2.5rem 1.5rem' }} className="fade-up">
+            <h2 style={{ fontSize:'2rem', fontWeight:800, marginBottom:'2rem' }}>My Profile</h2>
+            <div className="profile-grid">
+                {/* Left col */}
+                <div style={{ display:'flex', flexDirection:'column', gap:'1rem' }}>
+                    <div className="card" style={{ padding:'1.5rem', textAlign:'center' }}>
+                        <img src={avatarUrl(profile.avatar_seed||user.id)} width="80" height="80" className="avatar" style={{ margin:'0 auto 1rem', display:'block', width:80, height:80 }} alt="" />
+                        {editing ? (
+                            <div style={{ display:'flex', flexDirection:'column', gap:'0.75rem', textAlign:'left' }}>
+                                <div><label className="label">Username</label><input className="input" value={form.username} onChange={e => setForm(f=>({...f,username:e.target.value}))} /></div>
+                                <div><label className="label">Full Name</label><input className="input" value={form.full_name} onChange={e => setForm(f=>({...f,full_name:e.target.value}))} /></div>
+                                <div><label className="label">Bio</label><textarea className="input" rows="3" value={form.bio} onChange={e => setForm(f=>({...f,bio:e.target.value}))} /></div>
+                                <button className="btn btn-primary" onClick={saveProfile}>Save</button>
+                                <button className="btn btn-ghost btn-sm" onClick={() => setEditing(false)}>Cancel</button>
+                            </div>
+                        ) : (
+                            <>
+                                <h3 style={{ fontWeight:800, fontSize:'1.2rem' }}>{profile.full_name || profile.username}</h3>
+                                <p style={{ color:'var(--muted)', fontSize:'0.82rem', marginBottom:'0.25rem' }}>@{profile.username}</p>
+                                <p style={{ color:'var(--muted)', fontSize:'0.85rem', lineHeight:1.5, margin:'0.75rem 0' }}>{profile.bio || 'No bio yet.'}</p>
+                                <button className="btn btn-ghost btn-sm" style={{ width:'100%', justifyContent:'center' }} onClick={() => setEditing(true)}>Edit Profile</button>
+                            </>
+                        )}
+                    </div>
+
+                    {/* Stats */}
+                    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0.75rem' }}>
+                        <div className="stat-box"><div className="stat-num">{myTasks.length}</div><div className="stat-label">Posted</div></div>
+                        <div className="stat-box"><div className="stat-num">{completed}</div><div className="stat-label">Completed</div></div>
+                        <div className="stat-box"><div className="stat-num">{avgRating}</div><div className="stat-label">Avg Rating</div></div>
+                        <div className="stat-box"><div className="stat-num">{reviews.length}</div><div className="stat-label">Reviews</div></div>
+                    </div>
+
+                    <button className="btn btn-ghost" style={{ width:'100%', justifyContent:'center', color:'var(--danger)', borderColor:'var(--danger)' }} onClick={onSignOut}>Sign Out</button>
+                </div>
+
+                {/* Right col — reviews */}
+                <div>
+                    <h3 style={{ fontWeight:700, fontSize:'0.8rem', textTransform:'uppercase', letterSpacing:'0.08em', color:'var(--muted)', marginBottom:'1rem' }}>Reviews</h3>
+                    {reviews.length === 0 ? (
+                        <div className="card" style={{ padding:'2rem', textAlign:'center', color:'var(--muted)' }}>No reviews yet.</div>
+                    ) : (
+                        <div style={{ display:'flex', flexDirection:'column', gap:'0.75rem' }}>
+                            {reviews.map(r => (
+                                <div key={r.id} className="review-card">
+                                    <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'0.4rem' }}>
+                                        <div style={{ display:'flex', alignItems:'center', gap:'0.5rem' }}>
+                                            <img src={avatarUrl(r.profiles?.avatar_seed||r.reviewer_id)} width="24" height="24" className="avatar" alt="" />
+                                            <span style={{ fontWeight:600, fontSize:'0.85rem' }}>{r.profiles?.username || 'user'}</span>
+                                        </div>
+                                        <span style={{ color:'var(--accent)', fontWeight:700, fontSize:'0.9rem' }}>{stars(r.rating)}</span>
+                                    </div>
+                                    <p style={{ color:'var(--muted)', fontSize:'0.85rem', lineHeight:1.5 }}>{r.comment}</p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ── CHAT PANEL ────────────────────────────────────────────────────────────────
+function ChatPanel({ task, user, onClose }) {
+    const [msgs, setMsgs]     = useState([]);
+    const [text, setText]     = useState('');
+    const [roomId, setRoomId] = useState(null);
+    const bottomRef           = useRef(null);
+
+    // Get or create chat room
+    useEffect(() => {
+        if (!user || !task) return;
+        const init = async () => {
+            let { data: room } = await sb.from('chat_rooms').select('*').eq('task_id', task.id).single();
+            if (!room) {
+                const { data: newRoom } = await sb.from('chat_rooms').insert({ task_id: task.id, user1_id: task.user_id, user2_id: user.id, created_at: new Date().toISOString() }).select().single();
+                room = newRoom;
+            }
+            if (room) {
+                setRoomId(room.id);
+                const { data: history } = await sb.from('chat_messages').select('*').eq('room_id', room.id).order('created_at', { ascending: true });
+                setMsgs(history || []);
+            }
+        };
+        init();
+    }, [task, user]);
+
+    // Realtime subscription
+    useEffect(() => {
+        if (!roomId) return;
+        const channel = sb.channel(`room-${roomId}`)
+            .on('postgres_changes', { event:'INSERT', schema:'public', table:'chat_messages', filter:`room_id=eq.${roomId}` },
+                payload => setMsgs(m => [...m, payload.new]))
+            .subscribe();
+        return () => sb.removeChannel(channel);
+    }, [roomId]);
+
+    // Scroll to bottom
+    useEffect(() => { bottomRef.current?.scrollIntoView({ behavior:'smooth' }); }, [msgs]);
+
+    const send = async () => {
+        if (!text.trim() || !roomId) return;
+        await sb.from('chat_messages').insert({ room_id: roomId, sender_id: user.id, message: text.trim(), created_at: new Date().toISOString() });
+        setText('');
+    };
+
+    return (
+        <div className="chat-wrap fade-up">
+            <div className="chat-header">
+                <div>
+                    <div style={{ display:'flex', alignItems:'center', gap:'0.5rem', marginBottom:'0.2rem' }}>
+                        <span className="online-dot"></span>
+                        <span style={{ fontFamily:'Syne', fontWeight:700, fontSize:'0.9rem' }}>Live Chat</span>
+                    </div>
+                    <div style={{ color:'var(--muted)', fontSize:'0.78rem' }}>{task.title}</div>
+                </div>
+                <button className="btn btn-ghost btn-sm" onClick={onClose}>✕</button>
+            </div>
+            <div className="chat-messages">
+                {msgs.length === 0 && (
+                    <div style={{ textAlign:'center', color:'var(--muted)', fontSize:'0.82rem', padding:'2rem' }}>
+                        No messages yet. Say hello!
+                    </div>
+                )}
+                {msgs.map(m => (
+                    <div key={m.id}>
+                        <div className={`chat-bubble ${m.sender_id === user.id ? 'mine' : 'theirs'}`}>{m.message}</div>
+                        <div style={{ fontSize:'0.68rem', color:'var(--muted)', marginTop:'0.2rem', textAlign: m.sender_id === user.id ? 'right' : 'left', paddingInline:'0.25rem' }}>{ago(m.created_at)}</div>
+                    </div>
+                ))}
+                <div ref={bottomRef} />
+            </div>
+            <div className="chat-input-row">
+                <input className="chat-input" placeholder="Type a message..." value={text} onChange={e => setText(e.target.value)} onKeyDown={e => e.key === 'Enter' && send()} />
+                <button className="btn btn-primary btn-sm" onClick={send}>Send</button>
+            </div>
+        </div>
+    );
+}
+
+// ── REVIEW MODAL ──────────────────────────────────────────────────────────────
+function ReviewModal({ task, user, onSubmit, onClose }) {
+    const [rating, setRating]   = useState(0);
+    const [comment, setComment] = useState('');
+    const reviewedId = user?.id === task.user_id ? task.accepted_by : task.user_id;
+    return (
+        <div className="modal-overlay" onClick={onClose}>
+            <div className="modal" style={{ padding:'2rem' }} onClick={e => e.stopPropagation()}>
+                <h3 style={{ fontWeight:800, fontSize:'1.3rem', marginBottom:'0.5rem' }}>Leave a Review</h3>
+                <p style={{ color:'var(--muted)', marginBottom:'1.5rem', fontSize:'0.88rem' }}>How did it go with <strong>{task.title}</strong>?</p>
+                <div style={{ display:'flex', gap:'0.25rem', marginBottom:'1.25rem' }}>
+                    {[1,2,3,4,5].map(s => (
+                        <span key={s} className={`star ${rating>=s?'lit':''}`} onClick={() => setRating(s)}>★</span>
+                    ))}
+                </div>
+                <div style={{ marginBottom:'1.25rem' }}>
+                    <label className="label">Comment</label>
+                    <textarea className="input" rows="4" placeholder="Share your experience..." value={comment} onChange={e => setComment(e.target.value)} />
+                </div>
+                <div style={{ display:'flex', gap:'0.75rem' }}>
+                    <button className="btn btn-primary" onClick={() => { if (!rating) { alert('Please select a rating.'); return; } onSubmit({ task_id: task.id, reviewed_id: reviewedId, rating, comment }); }}>Submit Review</button>
+                    <button className="btn btn-ghost" onClick={onClose}>Cancel</button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ── LOGIN MODAL ───────────────────────────────────────────────────────────────
+function LoginModal({ onLogin, onGoogle, onSwitch, onClose, error }) {
+    const [email, setEmail]       = useState('');
+    const [password, setPassword] = useState('');
+    return (
+        <div className="modal-overlay" onClick={onClose}>
+            <div className="modal" style={{ padding:'2rem' }} onClick={e => e.stopPropagation()}>
+                <h3 style={{ fontWeight:800, fontSize:'1.4rem', marginBottom:'0.25rem' }}>Welcome back</h3>
+                <p style={{ color:'var(--muted)', fontSize:'0.85rem', marginBottom:'1.5rem' }}>Log in to accept tasks and get paid.</p>
+                <button className="btn btn-secondary" style={{ width:'100%', justifyContent:'center', marginBottom:'1.25rem' }} onClick={onGoogle}>
+                    <span style={{ fontSize:'1.1rem' }}>G</span> Continue with Google
+                </button>
+                <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', marginBottom:'1.25rem' }}>
+                    <hr style={{ flex:1, border:'none', borderTop:'1px solid var(--border)' }} />
+                    <span style={{ color:'var(--muted)', fontSize:'0.78rem' }}>or</span>
+                    <hr style={{ flex:1, border:'none', borderTop:'1px solid var(--border)' }} />
+                </div>
+                <div style={{ display:'flex', flexDirection:'column', gap:'0.75rem' }}>
+                    <div><label className="label">Email</label><input className="input" type="email" placeholder="you@email.com" value={email} onChange={e => setEmail(e.target.value)} /></div>
+                    <div><label className="label">Password</label><input className="input" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={e => e.key==='Enter' && onLogin({email,password})} /></div>
+                    {error && <p style={{ color:'var(--danger)', fontSize:'0.82rem' }}>{error}</p>}
+                    <button className="btn btn-primary" style={{ width:'100%', justifyContent:'center' }} onClick={() => onLogin({email,password})}>Log In</button>
+                </div>
+                <p style={{ textAlign:'center', marginTop:'1.25rem', fontSize:'0.83rem', color:'var(--muted)' }}>
+                    No account? <button style={{ background:'none', border:'none', color:'var(--accent)', cursor:'pointer', fontWeight:700 }} onClick={onSwitch}>Sign Up</button>
+                </p>
+            </div>
+        </div>
+    );
+}
+
+// ── SIGNUP MODAL ──────────────────────────────────────────────────────────────
+function SignupModal({ onSignup, onGoogle, onSwitch, onClose, error }) {
+    const [form, setForm] = useState({ email:'', password:'', username:'', full_name:'' });
+    const set = (k,v) => setForm(f => ({ ...f, [k]:v }));
+    return (
+        <div className="modal-overlay" onClick={onClose}>
+            <div className="modal" style={{ padding:'2rem' }} onClick={e => e.stopPropagation()}>
+                <h3 style={{ fontWeight:800, fontSize:'1.4rem', marginBottom:'0.25rem' }}>Create account</h3>
+                <p style={{ color:'var(--muted)', fontSize:'0.85rem', marginBottom:'1.5rem' }}>Join SideQuest — post tasks or get paid to do them.</p>
+                <button className="btn btn-secondary" style={{ width:'100%', justifyContent:'center', marginBottom:'1.25rem' }} onClick={onGoogle}>
+                    <span style={{ fontSize:'1.1rem' }}>G</span> Continue with Google
+                </button>
+                <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', marginBottom:'1.25rem' }}>
+                    <hr style={{ flex:1, border:'none', borderTop:'1px solid var(--border)' }} />
+                    <span style={{ color:'var(--muted)', fontSize:'0.78rem' }}>or</span>
+                    <hr style={{ flex:1, border:'none', borderTop:'1px solid var(--border)' }} />
+                </div>
+                <div style={{ display:'flex', flexDirection:'column', gap:'0.75rem' }}>
+                    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0.75rem' }}>
+                        <div><label className="label">Full Name</label><input className="input" placeholder="Jane Doe" value={form.full_name} onChange={e => set('full_name',e.target.value)} /></div>
+                        <div><label className="label">Username</label><input className="input" placeholder="janedoe" value={form.username} onChange={e => set('username',e.target.value)} /></div>
+                    </div>
+                    <div><label className="label">Email</label><input className="input" type="email" placeholder="you@email.com" value={form.email} onChange={e => set('email',e.target.value)} /></div>
+                    <div><label className="label">Password</label><input className="input" type="password" placeholder="Min 6 characters" value={form.password} onChange={e => set('password',e.target.value)} /></div>
+                    {error && <p style={{ color:'var(--danger)', fontSize:'0.82rem' }}>{error}</p>}
+                    <button className="btn btn-primary" style={{ width:'100%', justifyContent:'center' }}
+                        onClick={() => {
+                            if (!form.email||!form.password||!form.username) { alert('All fields required.'); return; }
+                            onSignup(form);
+                        }}>
+                        Create Account
+                    </button>
+                </div>
+                <p style={{ textAlign:'center', marginTop:'1.25rem', fontSize:'0.83rem', color:'var(--muted)' }}>
+                    Already have one? <button style={{ background:'none', border:'none', color:'var(--accent)', cursor:'pointer', fontWeight:700 }} onClick={onSwitch}>Log In</button>
+                </p>
+            </div>
+        </div>
+    );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
 </body>
 </html>
