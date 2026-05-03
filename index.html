@@ -3,207 +3,252 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SideQuest | Get It Done. Get Paid.</title>
+    <title>SideQuest | Real Tasks. Real Rewards.</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #0a0a0a;
-            --surface: #141414;
-            --surface2: #1e1e1e;
-            --border: #2a2a2a;
-            --accent: #f0e040;
-            --accent2: #40e0b0;
-            --text: #f0f0f0;
-            --muted: #888;
-            --danger: #ff4444;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; }
         body {
-            font-family: 'DM Sans', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #FBFDFF;
+            color: #1A1A1A;
+            margin: 0;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
-        h1,h2,h3,h4,h5 { font-family: 'Syne', sans-serif; }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-        /* Nav */
-        .nav {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-            height: 64px;
-            background: rgba(10,10,10,0.92);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-            display: flex; align-items: center;
-            padding: 0 2rem;
-            gap: 2rem;
+        .glass-nav {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
         }
-        .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
-        .logo-dot { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; display: inline-block; }
-        .nav-links { display: flex; gap: 0.25rem; flex: 1; justify-content: center; }
-        .nav-btn { background: none; border: none; color: var(--muted); font-family: 'Syne', sans-serif; font-weight: 600; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
-        .nav-btn:hover { color: var(--text); background: var(--surface); }
-        .nav-btn.active { color: var(--bg); background: var(--accent); }
-        .nav-auth { display: flex; align-items: center; gap: 1rem; margin-left: auto; }
 
-        /* Buttons */
-        .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.65rem 1.4rem; border-radius: 10px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.82rem; letter-spacing: 0.04em; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; }
-        .btn-primary { background: var(--accent); color: var(--bg); }
-        .btn-primary:hover { background: #ffe800; transform: translateY(-1px); }
-        .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
-        .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
-        .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
-        .btn-ghost:hover { color: var(--text); border-color: var(--text); }
-        .btn-danger { background: var(--danger); color: #fff; }
-        .btn-sm { padding: 0.45rem 1rem; font-size: 0.76rem; }
-        .btn-lg { padding: 0.9rem 2rem; font-size: 0.92rem; }
+        .standard-card {
+            background: #fff;
+            border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.04);
+            border-radius: 2.5rem;
+            transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+        }
+        .standard-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.08);
+            border-color: rgba(0,0,0,0.1);
+        }
 
-        /* Cards */
-        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; }
-        .card:hover { border-color: #3a3a3a; }
+        .btn-black {
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 0.9rem 1.8rem;
+            border-radius: 1rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 8px 20px -5px rgba(0,0,0,0.15);
+        }
+        .btn-black:hover { background: #222; transform: scale(1.02); }
+        .btn-black:active { transform: scale(0.98); }
 
-        /* Task cards */
-        .task-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; cursor: pointer; transition: all 0.25s; }
-        .task-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(240,224,64,0.08); }
+        .btn-outline {
+            background: transparent;
+            color: #000;
+            border: 1.5px solid rgba(0,0,0,0.12);
+            padding: 0.9rem 1.8rem;
+            border-radius: 1rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-outline:hover { border-color: #000; }
 
-        /* Reward badge */
-        .reward { background: var(--accent); color: var(--bg); font-family: 'Syne', sans-serif; font-weight: 800; padding: 0.3rem 0.8rem; border-radius: 8px; font-size: 1.1rem; }
+        .btn-sm { padding: 0.55rem 1.1rem; font-size: 0.75rem; border-radius: 0.75rem; }
 
-        /* Category pill */
-        .cat-pill { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.25rem 0.75rem; border-radius: 20px; border: 1px solid var(--border); color: var(--muted); }
-        .cat-pill.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+        .badge-verified {
+            background: linear-gradient(135deg, #3B82F6, #2563EB);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 900;
+            padding: 3px 10px;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .slide-up { animation: slideUp 0.45s ease-out forwards; }
 
         /* Status badges */
-        .status-open { background: rgba(64,224,176,0.15); color: var(--accent2); border: 1px solid rgba(64,224,176,0.3); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 6px; }
-        .status-taken { background: rgba(255,165,0,0.15); color: #ffa500; border: 1px solid rgba(255,165,0,0.3); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 6px; }
-        .status-done { background: rgba(100,200,100,0.15); color: #64c864; border: 1px solid rgba(100,200,100,0.3); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 6px; }
+        .status-open   { background:#ecfdf5; color:#059669; border:1px solid #a7f3d0; font-size:10px; font-weight:900; padding:3px 10px; border-radius:999px; text-transform:uppercase; letter-spacing:0.05em; }
+        .status-taken  { background:#fff7ed; color:#d97706; border:1px solid #fcd34d; font-size:10px; font-weight:900; padding:3px 10px; border-radius:999px; text-transform:uppercase; letter-spacing:0.05em; }
+        .status-done   { background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; font-size:10px; font-weight:900; padding:3px 10px; border-radius:999px; text-transform:uppercase; letter-spacing:0.05em; }
 
-        /* Form inputs */
-        .input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem 1rem; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.92rem; outline: none; transition: border 0.2s; }
-        .input:focus { border-color: var(--accent); }
-        .input::placeholder { color: var(--muted); }
-        select.input { cursor: pointer; }
-        textarea.input { resize: vertical; min-height: 100px; }
-        .label { font-family: 'Syne', sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; display: block; }
+        /* Input */
+        .sq-input {
+            width: 100%;
+            background: #f8f8f8;
+            border: 1.5px solid transparent;
+            border-radius: 1rem;
+            padding: 0.85rem 1.1rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .sq-input:focus { border-color: #000; background: #fff; }
+        .sq-input::placeholder { color: #aaa; }
+        textarea.sq-input { resize: vertical; min-height: 110px; }
+        select.sq-input { cursor: pointer; }
+
+        .sq-label {
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: #aaa;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.35);
+            backdrop-filter: blur(4px);
+            z-index: 300;
+            display: flex; align-items: center; justify-content: center;
+            padding: 1rem;
+        }
+        .modal-box {
+            background: #fff;
+            border-radius: 2.5rem;
+            width: 100%; max-width: 460px;
+            max-height: 90vh; overflow-y: auto;
+            padding: 2.5rem;
+            box-shadow: 0 40px 80px -20px rgba(0,0,0,0.15);
+        }
 
         /* Chat */
-        .chat-wrap { position: fixed; bottom: 1.5rem; right: 1.5rem; width: 380px; height: 560px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; display: flex; flex-direction: column; z-index: 500; box-shadow: 0 20px 60px rgba(0,0,0,0.5); overflow: hidden; }
-        .chat-header { background: var(--surface2); border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; }
-        .chat-messages { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
-        .chat-bubble { max-width: 78%; padding: 0.65rem 1rem; border-radius: 14px; font-size: 0.86rem; line-height: 1.5; }
-        .chat-bubble.mine { background: var(--accent); color: var(--bg); border-bottom-right-radius: 4px; align-self: flex-end; font-weight: 500; }
-        .chat-bubble.theirs { background: var(--surface2); color: var(--text); border-bottom-left-radius: 4px; align-self: flex-start; }
-        .chat-input-row { border-top: 1px solid var(--border); padding: 0.75rem; display: flex; gap: 0.5rem; }
-        .chat-input { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 0.6rem 0.9rem; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.86rem; outline: none; }
-        .chat-input:focus { border-color: var(--accent); }
-
-        /* Modal overlay */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 1rem; }
-        .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
+        .chat-panel {
+            position: fixed; bottom: 1.5rem; right: 1.5rem;
+            width: 400px; height: 580px;
+            background: #fff;
+            border: 1px solid rgba(0,0,0,0.07);
+            border-radius: 2.5rem;
+            box-shadow: 0 30px 60px -15px rgba(0,0,0,0.12);
+            display: flex; flex-direction: column;
+            z-index: 400; overflow: hidden;
+        }
+        .chat-header {
+            background: #000; color: #fff;
+            padding: 1.25rem 1.5rem;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .chat-messages {
+            flex: 1; overflow-y: auto;
+            padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem;
+            background: #f8f8f8;
+        }
+        .bubble-mine   { background:#000; color:#fff; border-radius:1.25rem; border-bottom-right-radius:4px; padding:0.75rem 1rem; font-size:0.86rem; line-height:1.5; max-width:80%; align-self:flex-end; font-weight:500; }
+        .bubble-theirs { background:#fff; color:#1a1a1a; border-radius:1.25rem; border-bottom-left-radius:4px; padding:0.75rem 1rem; font-size:0.86rem; line-height:1.5; max-width:80%; align-self:flex-start; box-shadow:0 2px 8px rgba(0,0,0,0.06); font-weight:500; }
+        .chat-input-row {
+            padding: 1rem 1.25rem;
+            background: #fff;
+            border-top: 1px solid rgba(0,0,0,0.06);
+            display: flex; gap: 0.5rem;
+        }
+        .chat-input {
+            flex: 1; background: #f8f8f8; border: 1.5px solid transparent;
+            border-radius: 1rem; padding: 0.65rem 1rem;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.86rem; font-weight: 500;
+            outline: none; transition: border 0.2s;
+        }
+        .chat-input:focus { border-color: #000; background: #fff; }
 
         /* Stars */
-        .star { cursor: pointer; font-size: 1.4rem; color: var(--border); transition: color 0.15s; }
-        .star.lit { color: var(--accent); }
+        .star { font-size: 1.6rem; cursor: pointer; color: #e5e7eb; transition: color 0.15s; }
+        .star.lit { color: #f59e0b; }
 
-        /* Avatar */
-        .avatar { border-radius: 10px; object-fit: cover; background: var(--surface2); }
+        /* Nav active */
+        .nav-active { color: #000 !important; text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 6px; }
 
-        /* Online dot */
-        .online-dot { width: 9px; height: 9px; background: var(--accent2); border-radius: 50%; display: inline-block; box-shadow: 0 0 6px var(--accent2); }
+        /* Category pills */
+        .cat-btn {
+            white-space: nowrap;
+            padding: 0.6rem 1.4rem;
+            border-radius: 1rem;
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            border: 1.5px solid rgba(0,0,0,0.08);
+            background: #fff;
+            color: #aaa;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .cat-btn:hover { border-color: #000; color: #000; }
+        .cat-btn.active { background: #000; color: #fff; border-color: #000; }
 
-        /* Animations */
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-        .fade-up { animation: fadeUp 0.4s ease forwards; }
-        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .pulse { animation: pulse 2s infinite; }
-
-        /* Hero */
-        .hero-bg { background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(240,224,64,0.12), transparent); }
-
-        /* Grid */
-        .task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; }
-
-        /* Profile */
-        .profile-grid { display: grid; grid-template-columns: 300px 1fr; gap: 1.5rem; }
-
-        /* Stat box */
-        .stat-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; text-align: center; }
-        .stat-num { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--accent); }
-        .stat-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-top: 0.2rem; }
-
-        /* Divider */
-        .divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
-
-        /* Scrollable cat row */
-        .cat-row { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.25rem; }
-        .cat-row::-webkit-scrollbar { display: none; }
-
-        /* Search bar */
-        .search-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0.75rem 1.25rem; display: flex; align-items: center; gap: 0.75rem; max-width: 520px; width: 100%; }
-        .search-bar input { flex: 1; background: none; border: none; outline: none; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.92rem; }
-        .search-bar input::placeholder { color: var(--muted); }
-
-        /* Review card */
-        .review-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; }
-
-        /* Notification dot */
-        .notif-dot { width: 8px; height: 8px; background: var(--danger); border-radius: 50%; position: absolute; top: -2px; right: -2px; }
+        /* Task grid */
+        .task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
 
         @media (max-width: 768px) {
-            .profile-grid { grid-template-columns: 1fr; }
-            .chat-wrap { width: calc(100vw - 2rem); right: 1rem; }
-            .nav-links { display: none; }
+            .chat-panel { width: calc(100vw - 2rem); right: 1rem; }
+            .task-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const { useState, useEffect, useRef, useCallback } = React;
+const { useState, useEffect, useRef } = React;
 
-// ── SUPABASE ──────────────────────────────────────────────────────────────────
-const SUPABASE_URL  = 'https://rmajagnleibmlmcktpae.supabase.co';
-const SUPABASE_KEY  = 'sb_publishable_egu0MKgcW8jm0IpG9PQbgQ_5ClCWNNf';
+const SUPABASE_URL = 'https://rmajagnleibmlmcktpae.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_egu0MKgcW8jm0IpG9PQbgQ_5ClCWNNf';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ── CATEGORIES ────────────────────────────────────────────────────────────────
 const CATS = ['All','Errands','Moving','Pets','Cleaning','Handyman','Delivery','Yard Work','Tech Help','Other'];
 
-// ── HELPERS ───────────────────────────────────────────────────────────────────
-const ago = (ts) => {
+const ago = ts => {
     const s = Math.floor((Date.now() - new Date(ts)) / 1000);
     if (s < 60) return 'just now';
     if (s < 3600) return `${Math.floor(s/60)}m ago`;
     if (s < 86400) return `${Math.floor(s/3600)}h ago`;
     return `${Math.floor(s/86400)}d ago`;
 };
-const stars = (n) => '★'.repeat(n) + '☆'.repeat(5-n);
-const avatarUrl = (seed) => `https://api.dicebear.com/7.x/thumbs/svg?seed=${seed}&backgroundColor=1e1e1e`;
+const avatarUrl = seed => `https://api.dicebear.com/7.x/shapes/svg?seed=${seed}`;
 
-// ── MAIN APP ──────────────────────────────────────────────────────────────────
+// ── APP ───────────────────────────────────────────────────────────────────────
 function App() {
-    const [view, setView]           = useState('browse');
-    const [user, setUser]           = useState(null);
-    const [profile, setProfile]     = useState(null);
-    const [tasks, setTasks]         = useState([]);
-    const [search, setSearch]       = useState('');
-    const [cat, setCat]             = useState('All');
-    const [chat, setChat]           = useState(null);   // active task for chat
-    const [modal, setModal]         = useState(null);   // 'login' | 'signup' | 'task' | 'review' | {type:'detail', task}
-    const [loading, setLoading]     = useState(true);
-    const [authError, setAuthError] = useState('');
+    const [view, setView]       = useState('browse');
+    const [user, setUser]       = useState(null);
+    const [profile, setProfile] = useState(null);
+    const [tasks, setTasks]     = useState([]);
+    const [search, setSearch]   = useState('');
+    const [cat, setCat]         = useState('All');
+    const [chat, setChat]       = useState(null);
+    const [modal, setModal]     = useState(null);
+    const [authErr, setAuthErr] = useState('');
+    const [loading, setLoading] = useState(true);
 
-    // ── Auth init ──
     useEffect(() => {
         sb.auth.getSession().then(({ data: { session } }) => {
             if (session?.user) fetchProfile(session.user);
@@ -213,17 +258,17 @@ function App() {
             if (session?.user) fetchProfile(session.user);
             else { setUser(null); setProfile(null); }
         });
+        fetchTasks();
     }, []);
 
-    useEffect(() => { fetchTasks(); }, []);
+    // Refresh lucide icons every render
+    useEffect(() => { if (window.lucide) window.lucide.createIcons(); });
 
-    // ── Fetch profile ──
-    const fetchProfile = async (u) => {
+    const fetchProfile = async u => {
         setUser(u);
         const { data } = await sb.from('profiles').select('*').eq('id', u.id).single();
-        if (data) setProfile(data);
+        if (data) { setProfile(data); }
         else {
-            // Create profile if missing
             const np = { id: u.id, username: u.email.split('@')[0], full_name: u.user_metadata?.full_name || '', avatar_seed: u.id, bio: '', created_at: new Date().toISOString() };
             await sb.from('profiles').insert(np);
             setProfile(np);
@@ -231,201 +276,213 @@ function App() {
         setLoading(false);
     };
 
-    // ── Fetch tasks ──
     const fetchTasks = async () => {
         const { data } = await sb.from('tasks').select('*, profiles(username, avatar_seed, full_name)').order('created_at', { ascending: false });
         setTasks(data || []);
     };
 
-    // ── Auth handlers ──
     const handleSignup = async ({ email, password, username, full_name }) => {
-        setAuthError('');
+        setAuthErr('');
         const { data, error } = await sb.auth.signUp({ email, password, options: { data: { full_name } } });
-        if (error) { setAuthError(error.message); return; }
+        if (error) { setAuthErr(error.message); return; }
         if (data.user) {
-            const np = { id: data.user.id, username, full_name, avatar_seed: data.user.id, bio: '', created_at: new Date().toISOString() };
-            await sb.from('profiles').insert(np);
+            await sb.from('profiles').insert({ id: data.user.id, username, full_name, avatar_seed: data.user.id, bio: '', created_at: new Date().toISOString() });
         }
         setModal(null);
+        alert('Check your email to confirm your account!');
     };
 
     const handleLogin = async ({ email, password }) => {
-        setAuthError('');
+        setAuthErr('');
         const { error } = await sb.auth.signInWithPassword({ email, password });
-        if (error) { setAuthError(error.message); return; }
+        if (error) { setAuthErr(error.message); return; }
         setModal(null);
     };
 
-    const handleGoogleLogin = () => {
-        sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
-    };
+    const handleGoogle = () => sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
+    const handleSignOut = async () => { await sb.auth.signOut(); setUser(null); setProfile(null); setView('browse'); };
 
-    const handleSignOut = async () => {
-        await sb.auth.signOut();
-        setUser(null); setProfile(null); setView('browse');
-    };
-
-    // ── Post task ──
-    const handlePostTask = async (form) => {
+    const handlePostTask = async form => {
         if (!user) { setModal('login'); return; }
-        const { error } = await sb.from('tasks').insert({
-            title: form.title, description: form.description,
-            reward: parseFloat(form.reward), category: form.category,
-            location: form.location, user_id: user.id, status: 'open',
-            created_at: new Date().toISOString()
-        });
+        const { error } = await sb.from('tasks').insert({ title: form.title, description: form.description, reward: parseFloat(form.reward), category: form.category, location: form.location, user_id: user.id, status: 'open', created_at: new Date().toISOString() });
         if (error) { alert('Error: ' + error.message); return; }
         await fetchTasks();
         setView('browse');
     };
 
-    // ── Accept task ──
-    const handleAccept = async (task) => {
+    const handleAccept = async task => {
         if (!user) { setModal('login'); return; }
         if (task.user_id === user.id) { alert("You can't accept your own task."); return; }
-        // Update task status
         await sb.from('tasks').update({ status: 'taken', accepted_by: user.id }).eq('id', task.id);
         await fetchTasks();
-        // Open chat
         setChat(task);
         setModal(null);
     };
 
-    // ── Mark complete ──
-    const handleComplete = async (taskId) => {
+    const handleComplete = async taskId => {
         await sb.from('tasks').update({ status: 'done' }).eq('id', taskId);
         await fetchTasks();
     };
 
-    // ── Submit review ──
     const handleReview = async ({ task_id, reviewed_id, rating, comment }) => {
-        if (!user) return;
         await sb.from('reviews').insert({ task_id, reviewer_id: user.id, reviewed_id, rating, comment, created_at: new Date().toISOString() });
         setModal(null);
         alert('Review submitted!');
     };
 
-    // ── Filtered tasks ──
     const filtered = tasks.filter(t => {
-        const matchCat = cat === 'All' || t.category === cat;
-        const matchSearch = !search || t.title.toLowerCase().includes(search.toLowerCase()) || t.description?.toLowerCase().includes(search.toLowerCase()) || t.location?.toLowerCase().includes(search.toLowerCase());
-        return matchCat && matchSearch;
+        const mc = cat === 'All' || t.category === cat;
+        const ms = !search || t.title?.toLowerCase().includes(search.toLowerCase()) || t.description?.toLowerCase().includes(search.toLowerCase()) || t.location?.toLowerCase().includes(search.toLowerCase());
+        return mc && ms;
     });
 
     if (loading) return (
         <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100vh', flexDirection:'column', gap:'1rem' }}>
-            <div style={{ fontFamily:'Syne', fontSize:'1.5rem', fontWeight:800 }}>SideQuest<span style={{color:'var(--accent)'}}>.</span></div>
-            <div style={{ color:'var(--muted)', fontSize:'0.85rem' }} className="pulse">Loading...</div>
+            <div style={{ fontFamily:'Plus Jakarta Sans', fontWeight:900, fontSize:'1.8rem' }}>SideQuest</div>
+            <div style={{ color:'#aaa', fontSize:'0.85rem' }}>Loading...</div>
         </div>
     );
 
     return (
-        <div style={{ paddingTop: '64px' }}>
-            {/* NAV */}
-            <nav className="nav">
-                <div className="logo" onClick={() => setView('browse')}>
-                    <span className="logo-dot"></span>SideQuest
+        <div style={{ minHeight:'100vh' }}>
+            {/* ── NAV ── */}
+            <nav className="glass-nav" style={{ position:'fixed', top:0, left:0, right:0, zIndex:100, height:72, display:'flex', alignItems:'center', padding:'0 2rem', gap:'2rem' }}>
+                {/* Logo */}
+                <div style={{ display:'flex', flexDirection:'column', cursor:'pointer', flexShrink:0 }} onClick={() => setView('browse')}>
+                    <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                        <div style={{ width:32, height:32, background:'#000', borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                            <i data-lucide="zap" style={{ width:18, height:18, color:'#fff' }}></i>
+                        </div>
+                        <span style={{ fontSize:'1.4rem', fontWeight:900, letterSpacing:'-0.04em' }}>SideQuest</span>
+                    </div>
+                    <span style={{ fontSize:'9px', fontWeight:800, color:'#bbb', textTransform:'uppercase', letterSpacing:'0.25em', marginTop:4, paddingLeft:2, fontStyle:'italic' }}>Real Tasks. Real Rewards.</span>
                 </div>
-                <div className="nav-links">
+
+                {/* Nav links */}
+                <div style={{ display:'flex', gap:4, flex:1, justifyContent:'center' }}>
                     {[['browse','Browse Tasks'],['post','Post a Task'],['my-tasks','My Tasks']].map(([k,l]) => (
-                        <button key={k} className={`nav-btn ${view===k?'active':''}`} onClick={() => {
-                            if ((k==='post'||k==='my-tasks') && !user) { setModal('login'); return; }
-                            setView(k);
-                        }}>{l}</button>
+                        <button key={k} onClick={() => { if ((k==='post'||k==='my-tasks')&&!user){setModal('login');return;} setView(k); }}
+                            style={{ background:'none', border:'none', cursor:'pointer', fontFamily:'Plus Jakarta Sans', fontWeight:900, fontSize:'11px', letterSpacing:'0.12em', textTransform:'uppercase', color: view===k ? '#000':'#aaa', padding:'0.5rem 1rem', borderRadius:8, transition:'color 0.2s', textDecoration: view===k ? 'underline':'none', textDecorationThickness: view===k ? 3:'', textUnderlineOffset: view===k ? 6:'' }}>
+                            {l}
+                        </button>
                     ))}
                 </div>
-                <div className="nav-auth">
-                    {user ? (
+
+                {/* Auth */}
+                <div style={{ display:'flex', alignItems:'center', gap:12, flexShrink:0 }}>
+                    {!user ? (
                         <>
-                            <button className="btn btn-ghost btn-sm" onClick={() => setView('profile')}>
-                                <img src={avatarUrl(profile?.avatar_seed || user.id)} width="22" height="22" className="avatar" alt="" />
-                                {profile?.username || 'Profile'}
-                            </button>
-                            <button className="btn btn-ghost btn-sm" onClick={handleSignOut}>Sign Out</button>
+                            <button className="btn-outline btn-sm" onClick={() => { setAuthErr(''); setModal('login'); }}>Log In</button>
+                            <button className="btn-black btn-sm" onClick={() => { setAuthErr(''); setModal('signup'); }}>Sign Up</button>
                         </>
                     ) : (
                         <>
-                            <button className="btn btn-ghost btn-sm" onClick={() => { setAuthError(''); setModal('login'); }}>Log In</button>
-                            <button className="btn btn-primary btn-sm" onClick={() => { setAuthError(''); setModal('signup'); }}>Sign Up</button>
+                            <div style={{ textAlign:'right' }}>
+                                <div style={{ fontSize:'12px', fontWeight:900, lineHeight:1 }}>{profile?.full_name || profile?.username}</div>
+                                <span className="badge-verified" style={{ marginTop:3, display:'inline-block' }}>Verified</span>
+                            </div>
+                            <button onClick={() => setView('profile')} style={{ background:'none', border:'none', cursor:'pointer', position:'relative' }}>
+                                <img src={avatarUrl(profile?.avatar_seed || user.id)} width={44} height={44} style={{ borderRadius:12, border:'2px solid #fff', boxShadow:'0 2px 10px rgba(0,0,0,0.1)' }} />
+                                <div style={{ position:'absolute', top:-2, right:-2, width:12, height:12, background:'#10b981', border:'2px solid #fff', borderRadius:'50%' }}></div>
+                            </button>
                         </>
                     )}
                 </div>
             </nav>
 
-            {/* VIEWS */}
-            {view === 'browse'    && <BrowseView tasks={filtered} search={search} setSearch={setSearch} cat={cat} setCat={setCat} setModal={setModal} user={user} setChat={setChat} handleAccept={handleAccept} handleComplete={handleComplete} currentUserId={user?.id} />}
-            {view === 'post'      && <PostView onSubmit={handlePostTask} />}
-            {view === 'my-tasks'  && <MyTasksView user={user} profile={profile} tasks={tasks} setModal={setModal} handleComplete={handleComplete} setChat={setChat} fetchTasks={fetchTasks} />}
-            {view === 'profile'   && <ProfileView user={user} profile={profile} setProfile={setProfile} tasks={tasks} onSignOut={handleSignOut} />}
+            {/* ── MAIN ── */}
+            <main style={{ paddingTop:72, maxWidth:1400, margin:'0 auto', padding:'72px 2rem 6rem' }}>
+                {view === 'browse'   && <BrowseView tasks={filtered} search={search} setSearch={setSearch} cat={cat} setCat={setCat} user={user} setModal={setModal} setChat={setChat} handleAccept={handleAccept} handleComplete={handleComplete} fetchTasks={fetchTasks} />}
+                {view === 'post'     && <PostView onSubmit={handlePostTask} />}
+                {view === 'my-tasks' && <MyTasksView user={user} tasks={tasks} setModal={setModal} handleComplete={handleComplete} setChat={setChat} fetchTasks={fetchTasks} />}
+                {view === 'profile'  && <ProfileView user={user} profile={profile} setProfile={setProfile} tasks={tasks} onSignOut={handleSignOut} />}
+            </main>
 
-            {/* CHAT */}
+            {/* ── CHAT ── */}
             {chat && <ChatPanel task={chat} user={user} onClose={() => setChat(null)} />}
 
-            {/* MODALS */}
-            {modal === 'login'  && <LoginModal onLogin={handleLogin} onGoogle={handleGoogleLogin} onSwitch={() => { setAuthError(''); setModal('signup'); }} onClose={() => setModal(null)} error={authError} />}
-            {modal === 'signup' && <SignupModal onSignup={handleSignup} onGoogle={handleGoogleLogin} onSwitch={() => { setAuthError(''); setModal('login'); }} onClose={() => setModal(null)} error={authError} />}
-            {modal?.type === 'detail' && <TaskDetailModal task={modal.task} user={user} onClose={() => setModal(null)} onAccept={handleAccept} onComplete={handleComplete} onReview={() => setModal({ type:'review', task: modal.task })} onChat={() => { setChat(modal.task); setModal(null); }} />}
+            {/* ── EARNINGS HUD ── */}
+            {user && (
+                <div style={{ position:'fixed', bottom:24, left:24, background:'#000', color:'#fff', borderRadius:24, padding:'1rem 1.5rem', display:'flex', alignItems:'center', gap:'1.5rem', border:'1px solid #222', zIndex:200, boxShadow:'0 20px 40px rgba(0,0,0,0.2)' }} className="slide-up">
+                    <div>
+                        <div style={{ fontSize:'8px', fontWeight:900, color:'#555', textTransform:'uppercase', letterSpacing:'0.2em', marginBottom:2 }}>My Tasks</div>
+                        <div style={{ fontSize:'1.3rem', fontWeight:900, lineHeight:1 }}>{tasks.filter(t=>t.accepted_by===user.id).length}</div>
+                    </div>
+                    <div style={{ width:1, height:28, background:'#222' }}></div>
+                    <div>
+                        <div style={{ fontSize:'8px', fontWeight:900, color:'#555', textTransform:'uppercase', letterSpacing:'0.2em', marginBottom:2 }}>Posted</div>
+                        <div style={{ fontSize:'1.3rem', fontWeight:900, lineHeight:1 }}>{tasks.filter(t=>t.user_id===user.id).length}</div>
+                    </div>
+                </div>
+            )}
+
+            {/* ── MODALS ── */}
+            {modal === 'login'  && <AuthModal mode="login"  onLogin={handleLogin} onSignup={handleSignup} onGoogle={handleGoogle} onClose={() => setModal(null)} error={authErr} setError={setAuthErr} switchMode={() => { setAuthErr(''); setModal('signup'); }} />}
+            {modal === 'signup' && <AuthModal mode="signup" onLogin={handleLogin} onSignup={handleSignup} onGoogle={handleGoogle} onClose={() => setModal(null)} error={authErr} setError={setAuthErr} switchMode={() => { setAuthErr(''); setModal('login'); }} />}
+            {modal?.type === 'detail' && <TaskDetailModal task={modal.task} user={user} onClose={() => setModal(null)} onAccept={handleAccept} onComplete={handleComplete} onChat={t => { setChat(t); setModal(null); }} onReview={() => setModal({ type:'review', task: modal.task })} />}
             {modal?.type === 'review' && <ReviewModal task={modal.task} user={user} onSubmit={handleReview} onClose={() => setModal(null)} />}
         </div>
     );
 }
 
-// ── BROWSE VIEW ───────────────────────────────────────────────────────────────
-function BrowseView({ tasks, search, setSearch, cat, setCat, setModal, user, setChat, handleAccept, handleComplete, currentUserId }) {
+// ── BROWSE ────────────────────────────────────────────────────────────────────
+function BrowseView({ tasks, search, setSearch, cat, setCat, user, setModal, setChat, handleAccept, handleComplete, fetchTasks }) {
     return (
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '2rem 1.5rem' }}>
+        <div>
             {/* Hero */}
-            <div className="hero-bg fade-up" style={{ textAlign:'center', padding:'3rem 1rem 2.5rem', marginBottom:'2rem' }}>
-                <h1 style={{ fontSize:'clamp(2.2rem,5vw,3.8rem)', fontWeight:800, lineHeight:1.1, marginBottom:'1rem' }}>
-                    Pick Up a Task.<br/>
-                    <span style={{ color:'var(--accent)' }}>Get Paid.</span>
-                </h1>
-                <p style={{ color:'var(--muted)', fontSize:'1.05rem', marginBottom:'2rem', maxWidth:520, margin:'0 auto 2rem' }}>
-                    People near you need help with everyday tasks — dog walking, moving furniture, yard work, and more. Accept a task, complete it, collect your reward.
-                </p>
-                <div style={{ display:'flex', justifyContent:'center', gap:'1rem', flexWrap:'wrap' }}>
-                    <div className="search-bar" style={{ margin:'0 auto' }}>
-                        <span style={{ color:'var(--muted)', fontSize:'1.1rem' }}>🔍</span>
-                        <input placeholder="Search tasks, locations..." value={search} onChange={e => setSearch(e.target.value)} />
-                        {search && <button onClick={() => setSearch('')} style={{ background:'none', border:'none', color:'var(--muted)', cursor:'pointer', fontSize:'1.1rem' }}>✕</button>}
+            <div style={{ paddingTop:'3rem', marginBottom:'2.5rem' }} className="slide-up">
+                <div style={{ maxWidth:680 }}>
+                    <h2 style={{ fontSize:'clamp(2.8rem,6vw,5rem)', fontWeight:950, lineHeight:0.92, letterSpacing:'-0.04em', marginBottom:'1.5rem' }}>
+                        Pick Up a Task.<br/>
+                        <span style={{ color:'#d1d5db' }}>Get Paid.</span>
+                    </h2>
+                    <p style={{ color:'#6b7280', fontWeight:500, fontSize:'1rem', marginBottom:'2rem', lineHeight:1.6 }}>
+                        Someone nearby needs help — walking a dog, moving a couch, yard work, anything. Accept a task, complete it, collect your reward.
+                    </p>
+                    <div style={{ position:'relative', maxWidth:560 }}>
+                        <input className="sq-input" style={{ height:64, paddingLeft:52, fontSize:'1rem', borderRadius:'1.5rem', boxShadow:'0 20px 40px rgba(0,0,0,0.06)', border:'1px solid rgba(0,0,0,0.07)' }}
+                            placeholder="Search by task, location..."
+                            value={search} onChange={e => setSearch(e.target.value)} />
+                        <i data-lucide="search" style={{ position:'absolute', left:18, top:'50%', transform:'translateY(-50%)', width:20, height:20, color:'#ccc' }}></i>
+                        {search && <button onClick={() => setSearch('')} style={{ position:'absolute', right:16, top:'50%', transform:'translateY(-50%)', background:'none', border:'none', cursor:'pointer', color:'#aaa', fontSize:'1.1rem' }}>✕</button>}
                     </div>
                 </div>
             </div>
 
-            {/* Category filter */}
-            <div className="cat-row" style={{ marginBottom:'1.5rem' }}>
+            {/* Categories */}
+            <div style={{ display:'flex', gap:8, overflowX:'auto', paddingBottom:8, marginBottom:'1.5rem' }} className="hide-scrollbar">
                 {CATS.map(c => (
-                    <button key={c} className={`cat-pill ${cat===c?'active':''}`} onClick={() => setCat(c)}>{c}</button>
+                    <button key={c} className={`cat-btn ${cat===c?'active':''}`} onClick={() => setCat(c)}>{c}</button>
                 ))}
             </div>
 
-            {/* Stats bar */}
-            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.25rem' }}>
-                <p style={{ color:'var(--muted)', fontSize:'0.85rem' }}>
-                    <span style={{ color:'var(--text)', fontWeight:600 }}>{tasks.length}</span> tasks available
+            {/* Count */}
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.5rem' }}>
+                <p style={{ color:'#9ca3af', fontSize:'0.85rem', fontWeight:600 }}>
+                    <span style={{ color:'#1a1a1a', fontWeight:900 }}>{tasks.length}</span> tasks available
                 </p>
-                <div style={{ display:'flex', gap:'0.75rem', alignItems:'center' }}>
-                    <span className="online-dot"></span>
-                    <span style={{ color:'var(--muted)', fontSize:'0.8rem' }}>Live</span>
+                <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+                    <div style={{ width:8, height:8, background:'#10b981', borderRadius:'50%', boxShadow:'0 0 6px #10b981' }}></div>
+                    <span style={{ fontSize:'11px', fontWeight:700, color:'#9ca3af' }}>Live</span>
                 </div>
             </div>
 
-            {/* Task grid */}
+            {/* Grid */}
             {tasks.length === 0 ? (
-                <div style={{ textAlign:'center', padding:'5rem 1rem', color:'var(--muted)' }}>
-                    <div style={{ fontSize:'3rem', marginBottom:'1rem' }}>📭</div>
-                    <h3 style={{ marginBottom:'0.5rem' }}>No tasks found</h3>
-                    <p style={{ fontSize:'0.9rem' }}>Be the first to post something!</p>
+                <div style={{ textAlign:'center', padding:'6rem 1rem' }}>
+                    <div style={{ fontSize:'3.5rem', marginBottom:'1rem' }}>📭</div>
+                    <h3 style={{ fontWeight:900, fontSize:'1.4rem', marginBottom:'0.5rem' }}>No tasks yet</h3>
+                    <p style={{ color:'#9ca3af', marginBottom:'1.5rem' }}>Be the first to post something!</p>
                 </div>
             ) : (
                 <div className="task-grid">
                     {tasks.map((task, i) => (
-                        <TaskCard key={task.id} task={task} style={{ animationDelay: `${i*0.05}s` }}
+                        <TaskCard key={task.id} task={task} user={user}
+                            style={{ animationDelay:`${i*0.05}s` }}
                             onClick={() => setModal({ type:'detail', task })}
                             onAccept={() => handleAccept(task)}
                             onComplete={() => handleComplete(task.id)}
                             onChat={() => setChat(task)}
-                            currentUserId={currentUserId}
                         />
                     ))}
                 </div>
@@ -435,42 +492,48 @@ function BrowseView({ tasks, search, setSearch, cat, setCat, setModal, user, set
 }
 
 // ── TASK CARD ─────────────────────────────────────────────────────────────────
-function TaskCard({ task, onClick, onAccept, onComplete, onChat, currentUserId, style }) {
-    const isOwner   = currentUserId === task.user_id;
-    const isWorker  = currentUserId === task.accepted_by;
+function TaskCard({ task, user, onClick, onAccept, onComplete, onChat, style }) {
+    const isOwner  = user?.id === task.user_id;
+    const isWorker = user?.id === task.accepted_by;
     return (
-        <div className="task-card fade-up" style={style} onClick={onClick}>
-            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'0.75rem' }}>
-                <span className={`status-${task.status||'open'}`}>{task.status||'open'}</span>
-                <span className="reward">${task.reward}</span>
-            </div>
-            <h3 style={{ fontSize:'1.1rem', fontWeight:700, marginBottom:'0.4rem', lineHeight:1.3 }}>{task.title}</h3>
-            <p style={{ color:'var(--muted)', fontSize:'0.85rem', lineHeight:1.5, marginBottom:'1rem', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' }}>
-                {task.description}
-            </p>
-            <div style={{ display:'flex', gap:'0.5rem', marginBottom:'1rem', flexWrap:'wrap' }}>
-                {task.category && <span className="cat-pill">{task.category}</span>}
-                {task.location && <span style={{ fontSize:'0.75rem', color:'var(--muted)' }}>📍 {task.location}</span>}
-            </div>
-            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', borderTop:'1px solid var(--border)', paddingTop:'0.75rem' }}>
-                <div style={{ display:'flex', alignItems:'center', gap:'0.5rem' }}>
-                    <img src={avatarUrl(task.profiles?.avatar_seed || task.user_id)} width="26" height="26" className="avatar" alt="" />
-                    <span style={{ fontSize:'0.78rem', color:'var(--muted)' }}>{task.profiles?.username || 'user'}</span>
-                    <span style={{ fontSize:'0.72rem', color:'var(--border)' }}>{ago(task.created_at)}</span>
+        <div className="standard-card slide-up" style={{ padding:'2rem', display:'flex', flexDirection:'column', justifyContent:'space-between', cursor:'pointer', ...style }} onClick={onClick}>
+            <div>
+                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'1.25rem' }}>
+                    <span className={`status-${task.status||'open'}`}>{task.status||'open'}</span>
+                    <div style={{ textAlign:'right' }}>
+                        <div style={{ fontSize:'9px', fontWeight:900, color:'#ccc', textTransform:'uppercase', letterSpacing:'0.15em', marginBottom:2 }}>Reward</div>
+                        <div style={{ fontSize:'2rem', fontWeight:950, lineHeight:1, letterSpacing:'-0.03em' }}>${task.reward}</div>
+                    </div>
                 </div>
-                {/* Action buttons — stop propagation so card click doesn't fire */}
-                <div style={{ display:'flex', gap:'0.4rem' }} onClick={e => e.stopPropagation()}>
-                    {task.status === 'open' && !isOwner && (
-                        <button className="btn btn-primary btn-sm" onClick={onAccept}>Accept</button>
+                <h3 style={{ fontSize:'1.2rem', fontWeight:800, marginBottom:'0.5rem', lineHeight:1.3 }}>{task.title}</h3>
+                <p style={{ color:'#9ca3af', fontSize:'0.85rem', fontWeight:500, lineHeight:1.6, marginBottom:'1rem', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' }}>
+                    {task.description}
+                </p>
+                <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginBottom:'1rem' }}>
+                    {task.category && <span style={{ background:'#f3f4f6', color:'#6b7280', fontSize:'10px', fontWeight:800, padding:'3px 10px', borderRadius:999, textTransform:'uppercase', letterSpacing:'0.08em' }}>{task.category}</span>}
+                    {task.location && <span style={{ color:'#9ca3af', fontSize:'12px', fontWeight:600 }}>📍 {task.location}</span>}
+                </div>
+            </div>
+            <div style={{ borderTop:'1px solid #f3f4f6', paddingTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                    <img src={avatarUrl(task.profiles?.avatar_seed||task.user_id)} width={32} height={32} style={{ borderRadius:8, border:'1px solid #e5e7eb' }} />
+                    <div>
+                        <div style={{ fontSize:'11px', fontWeight:900, lineHeight:1, marginBottom:2 }}>{task.profiles?.username||'user'}</div>
+                        <div style={{ fontSize:'10px', color:'#ccc', fontWeight:600 }}>{ago(task.created_at)}</div>
+                    </div>
+                </div>
+                <div style={{ display:'flex', gap:6 }} onClick={e => e.stopPropagation()}>
+                    {task.status==='open' && !isOwner && (
+                        <button className="btn-black btn-sm" onClick={onAccept}>Accept</button>
                     )}
-                    {task.status === 'taken' && (isOwner || isWorker) && (
-                        <>
-                            <button className="btn btn-secondary btn-sm" onClick={onChat}>Chat</button>
-                            {isOwner && <button className="btn btn-sm" style={{background:'var(--accent2)',color:'var(--bg)'}} onClick={() => onComplete(task.id)}>Mark Done</button>}
-                        </>
+                    {task.status==='open' && isOwner && (
+                        <span style={{ fontSize:'10px', color:'#ccc', fontWeight:700, alignSelf:'center' }}>Your task</span>
                     )}
-                    {isOwner && task.status === 'open' && (
-                        <span style={{ fontSize:'0.72rem', color:'var(--muted)', alignSelf:'center' }}>Your task</span>
+                    {(task.status==='taken'||task.status==='done') && (isOwner||isWorker) && (
+                        <button className="btn-outline btn-sm" onClick={onChat}>Chat</button>
+                    )}
+                    {task.status==='taken' && isOwner && (
+                        <button className="btn-black btn-sm" onClick={() => onComplete(task.id)}>Mark Done</button>
                     )}
                 </div>
             </div>
@@ -479,46 +542,49 @@ function TaskCard({ task, onClick, onAccept, onComplete, onChat, currentUserId, 
 }
 
 // ── TASK DETAIL MODAL ─────────────────────────────────────────────────────────
-function TaskDetailModal({ task, user, onClose, onAccept, onComplete, onReview, onChat }) {
+function TaskDetailModal({ task, user, onClose, onAccept, onComplete, onChat, onReview }) {
     const isOwner  = user?.id === task.user_id;
     const isWorker = user?.id === task.accepted_by;
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="modal" style={{ padding:'2rem' }} onClick={e => e.stopPropagation()}>
+            <div className="modal-box" onClick={e => e.stopPropagation()}>
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'1.5rem' }}>
                     <div>
-                        <span className={`status-${task.status||'open'}`} style={{ marginBottom:'0.5rem', display:'inline-block' }}>{task.status||'open'}</span>
-                        <h2 style={{ fontSize:'1.5rem', fontWeight:800, lineHeight:1.2 }}>{task.title}</h2>
+                        <span className={`status-${task.status||'open'}`} style={{ marginBottom:8, display:'inline-block' }}>{task.status||'open'}</span>
+                        <h2 style={{ fontSize:'1.8rem', fontWeight:900, lineHeight:1.1, letterSpacing:'-0.02em' }}>{task.title}</h2>
                     </div>
-                    <span className="reward" style={{ fontSize:'1.5rem' }}>${task.reward}</span>
+                    <div style={{ textAlign:'right', flexShrink:0, marginLeft:'1rem' }}>
+                        <div style={{ fontSize:'9px', fontWeight:900, color:'#ccc', textTransform:'uppercase', letterSpacing:'0.15em', marginBottom:2 }}>Reward</div>
+                        <div style={{ fontSize:'2.5rem', fontWeight:950, lineHeight:1 }}>${task.reward}</div>
+                    </div>
                 </div>
-                <p style={{ color:'var(--muted)', lineHeight:1.7, marginBottom:'1.5rem' }}>{task.description}</p>
-                <div style={{ display:'flex', gap:'1rem', marginBottom:'1.5rem', flexWrap:'wrap' }}>
-                    {task.category && <div style={{ background:'var(--surface2)', border:'1px solid var(--border)', borderRadius:8, padding:'0.4rem 0.8rem', fontSize:'0.8rem' }}>📂 {task.category}</div>}
-                    {task.location && <div style={{ background:'var(--surface2)', border:'1px solid var(--border)', borderRadius:8, padding:'0.4rem 0.8rem', fontSize:'0.8rem' }}>📍 {task.location}</div>}
-                    <div style={{ background:'var(--surface2)', border:'1px solid var(--border)', borderRadius:8, padding:'0.4rem 0.8rem', fontSize:'0.8rem' }}>🕐 {ago(task.created_at)}</div>
+                <p style={{ color:'#6b7280', lineHeight:1.7, marginBottom:'1.5rem', fontWeight:500 }}>{task.description}</p>
+                <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginBottom:'1.5rem' }}>
+                    {task.category && <div style={{ background:'#f3f4f6', borderRadius:10, padding:'6px 12px', fontSize:'12px', fontWeight:700 }}>📂 {task.category}</div>}
+                    {task.location && <div style={{ background:'#f3f4f6', borderRadius:10, padding:'6px 12px', fontSize:'12px', fontWeight:700 }}>📍 {task.location}</div>}
+                    <div style={{ background:'#f3f4f6', borderRadius:10, padding:'6px 12px', fontSize:'12px', fontWeight:700 }}>🕐 {ago(task.created_at)}</div>
                 </div>
-                <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', background:'var(--surface2)', border:'1px solid var(--border)', borderRadius:12, padding:'0.75rem 1rem', marginBottom:'1.5rem' }}>
-                    <img src={avatarUrl(task.profiles?.avatar_seed || task.user_id)} width="36" height="36" className="avatar" alt="" />
+                <div style={{ display:'flex', alignItems:'center', gap:12, background:'#f8f8f8', borderRadius:16, padding:'1rem', marginBottom:'1.5rem' }}>
+                    <img src={avatarUrl(task.profiles?.avatar_seed||task.user_id)} width={42} height={42} style={{ borderRadius:10 }} />
                     <div>
-                        <div style={{ fontWeight:600, fontSize:'0.9rem' }}>{task.profiles?.full_name || task.profiles?.username || 'User'}</div>
-                        <div style={{ color:'var(--muted)', fontSize:'0.78rem' }}>@{task.profiles?.username}</div>
+                        <div style={{ fontWeight:800, fontSize:'0.95rem' }}>{task.profiles?.full_name||task.profiles?.username||'User'}</div>
+                        <div style={{ color:'#9ca3af', fontSize:'12px', fontWeight:600 }}>@{task.profiles?.username}</div>
                     </div>
                 </div>
-                <div style={{ display:'flex', gap:'0.75rem', flexWrap:'wrap' }}>
-                    {task.status === 'open' && !isOwner && (
-                        <button className="btn btn-primary btn-lg" onClick={() => onAccept(task)}>✅ Accept This Task</button>
+                <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
+                    {task.status==='open' && !isOwner && (
+                        <button className="btn-black" onClick={() => onAccept(task)}>✅ Accept This Task</button>
                     )}
-                    {(task.status === 'taken' || task.status === 'done') && (isOwner || isWorker) && (
-                        <button className="btn btn-secondary" onClick={onChat}>💬 Open Chat</button>
+                    {(task.status==='taken'||task.status==='done') && (isOwner||isWorker) && (
+                        <button className="btn-outline" onClick={() => onChat(task)}>💬 Open Chat</button>
                     )}
-                    {task.status === 'taken' && isOwner && (
-                        <button className="btn btn-sm" style={{background:'var(--accent2)',color:'var(--bg)'}} onClick={() => onComplete(task.id)}>Mark as Done</button>
+                    {task.status==='taken' && isOwner && (
+                        <button className="btn-black btn-sm" onClick={() => onComplete(task.id)}>Mark as Done</button>
                     )}
-                    {task.status === 'done' && (isOwner || isWorker) && (
-                        <button className="btn btn-secondary" onClick={onReview}>⭐ Leave Review</button>
+                    {task.status==='done' && (isOwner||isWorker) && (
+                        <button className="btn-outline" onClick={onReview}>⭐ Leave Review</button>
                     )}
-                    <button className="btn btn-ghost" onClick={onClose}>Close</button>
+                    <button className="btn-outline" onClick={onClose}>Close</button>
                 </div>
             </div>
         </div>
@@ -530,39 +596,36 @@ function PostView({ onSubmit }) {
     const [form, setForm] = useState({ title:'', description:'', reward:'', category:'Errands', location:'' });
     const set = (k,v) => setForm(f => ({ ...f, [k]:v }));
     return (
-        <div style={{ maxWidth:600, margin:'0 auto', padding:'2.5rem 1.5rem' }} className="fade-up">
-            <h2 style={{ fontSize:'2rem', fontWeight:800, marginBottom:'0.5rem' }}>Post a Task</h2>
-            <p style={{ color:'var(--muted)', marginBottom:'2rem' }}>Describe what you need done and what you'll pay. Someone nearby will pick it up.</p>
-            <div className="card" style={{ padding:'2rem', display:'flex', flexDirection:'column', gap:'1.25rem' }}>
+        <div style={{ maxWidth:620, margin:'0 auto', paddingTop:'2.5rem' }} className="slide-up">
+            <h2 style={{ fontSize:'3rem', fontWeight:950, letterSpacing:'-0.04em', marginBottom:'0.5rem', fontStyle:'italic' }}>Post a Task.</h2>
+            <p style={{ color:'#9ca3af', fontWeight:600, fontSize:'13px', textTransform:'uppercase', letterSpacing:'0.25em', marginBottom:'2rem' }}>Describe what you need done and your reward.</p>
+            <div className="standard-card" style={{ padding:'2.5rem', display:'flex', flexDirection:'column', gap:'1.25rem' }}>
                 <div>
-                    <label className="label">Task Title</label>
-                    <input className="input" placeholder="e.g. Walk my dog for 30 minutes" value={form.title} onChange={e => set('title',e.target.value)} />
+                    <label className="sq-label">Task Title</label>
+                    <input className="sq-input" placeholder="e.g. Walk my dog for 30 mins, Help move a couch..." value={form.title} onChange={e => set('title',e.target.value)} />
                 </div>
                 <div>
-                    <label className="label">Description</label>
-                    <textarea className="input" placeholder="Give details — when, where, any requirements..." value={form.description} onChange={e => set('description',e.target.value)} />
+                    <label className="sq-label">Description</label>
+                    <textarea className="sq-input" placeholder="More details — when, where, any special requirements..." value={form.description} onChange={e => set('description',e.target.value)} />
                 </div>
                 <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1rem' }}>
                     <div>
-                        <label className="label">Reward ($)</label>
-                        <input className="input" type="number" min="1" placeholder="20" value={form.reward} onChange={e => set('reward',e.target.value)} />
+                        <label className="sq-label">Your Reward ($)</label>
+                        <input className="sq-input" type="number" min="1" placeholder="20" value={form.reward} onChange={e => set('reward',e.target.value)} />
                     </div>
                     <div>
-                        <label className="label">Category</label>
-                        <select className="input" value={form.category} onChange={e => set('category',e.target.value)}>
-                            {CATS.filter(c=>c!=='All').map(c => <option key={c}>{c}</option>)}
+                        <label className="sq-label">Category</label>
+                        <select className="sq-input" value={form.category} onChange={e => set('category',e.target.value)}>
+                            {CATS.filter(c=>c!=='All').map(c=><option key={c}>{c}</option>)}
                         </select>
                     </div>
                 </div>
                 <div>
-                    <label className="label">Location / Area</label>
-                    <input className="input" placeholder="e.g. Downtown Moncton, NB" value={form.location} onChange={e => set('location',e.target.value)} />
+                    <label className="sq-label">Location / Area</label>
+                    <input className="sq-input" placeholder="e.g. Downtown Moncton, NB" value={form.location} onChange={e => set('location',e.target.value)} />
                 </div>
-                <button className="btn btn-primary btn-lg" style={{ width:'100%', justifyContent:'center' }}
-                    onClick={() => {
-                        if (!form.title || !form.reward) { alert('Title and reward are required.'); return; }
-                        onSubmit(form);
-                    }}>
+                <button className="btn-black" style={{ width:'100%', fontSize:'1rem', padding:'1.1rem', borderRadius:'1.25rem', justifyContent:'center' }}
+                    onClick={() => { if (!form.title||!form.reward){alert('Title and reward are required.');return;} onSubmit(form); }}>
                     🚀 Post Task
                 </button>
             </div>
@@ -570,149 +633,133 @@ function PostView({ onSubmit }) {
     );
 }
 
-// ── MY TASKS VIEW ─────────────────────────────────────────────────────────────
+// ── MY TASKS ──────────────────────────────────────────────────────────────────
 function MyTasksView({ user, tasks, setModal, handleComplete, setChat, fetchTasks }) {
     if (!user) return null;
-    const myPosted   = tasks.filter(t => t.user_id === user.id);
-    const myAccepted = tasks.filter(t => t.accepted_by === user.id);
+    const posted   = tasks.filter(t=>t.user_id===user.id);
+    const accepted = tasks.filter(t=>t.accepted_by===user.id);
 
-    const deleteTask = async (id) => {
+    const deleteTask = async id => {
         if (!confirm('Delete this task?')) return;
-        await sb.from('tasks').delete().eq('id', id);
+        await sb.from('tasks').delete().eq('id',id);
         fetchTasks();
     };
 
+    const Row = ({ task }) => (
+        <div className="standard-card" style={{ padding:'1.25rem 1.5rem', display:'flex', justifyContent:'space-between', alignItems:'center', gap:'1rem', flexWrap:'wrap', borderRadius:'1.5rem' }}>
+            <div style={{ flex:1, minWidth:200 }}>
+                <div style={{ display:'flex', gap:8, alignItems:'center', marginBottom:4, flexWrap:'wrap' }}>
+                    <span className={`status-${task.status||'open'}`}>{task.status||'open'}</span>
+                    <span style={{ fontWeight:800, fontSize:'0.95rem' }}>{task.title}</span>
+                </div>
+                <div style={{ display:'flex', gap:12, alignItems:'center' }}>
+                    <span style={{ color:'#1a1a1a', fontWeight:900, fontSize:'1.1rem' }}>${task.reward}</span>
+                    {task.location && <span style={{ color:'#9ca3af', fontSize:'12px', fontWeight:600 }}>📍 {task.location}</span>}
+                </div>
+            </div>
+            <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+                {(task.status==='taken'||task.status==='done') && <button className="btn-outline btn-sm" onClick={() => setChat(task)}>Chat</button>}
+                {task.status==='taken' && task.user_id===user.id && <button className="btn-black btn-sm" onClick={() => handleComplete(task.id)}>Mark Done</button>}
+                {task.status==='done' && <button className="btn-outline btn-sm" onClick={() => setModal({ type:'review', task })}>Review</button>}
+                {task.user_id===user.id && task.status==='open' && <button className="btn-outline btn-sm" style={{ color:'#ef4444', borderColor:'#ef4444' }} onClick={() => deleteTask(task.id)}>Delete</button>}
+            </div>
+        </div>
+    );
+
     const Section = ({ title, items, empty }) => (
         <div style={{ marginBottom:'2.5rem' }}>
-            <h3 style={{ fontSize:'1.1rem', fontWeight:700, marginBottom:'1rem', color:'var(--muted)', textTransform:'uppercase', letterSpacing:'0.08em', fontSize:'0.8rem' }}>{title}</h3>
-            {items.length === 0 ? (
-                <div style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:12, padding:'2rem', textAlign:'center', color:'var(--muted)', fontSize:'0.9rem' }}>{empty}</div>
-            ) : (
-                <div style={{ display:'flex', flexDirection:'column', gap:'0.75rem' }}>
-                    {items.map(task => (
-                        <div key={task.id} className="card" style={{ padding:'1.25rem', display:'flex', justifyContent:'space-between', alignItems:'center', gap:'1rem', flexWrap:'wrap' }}>
-                            <div style={{ flex:1, minWidth:200 }}>
-                                <div style={{ display:'flex', gap:'0.5rem', alignItems:'center', marginBottom:'0.3rem', flexWrap:'wrap' }}>
-                                    <span className={`status-${task.status||'open'}`}>{task.status||'open'}</span>
-                                    <span style={{ fontWeight:600 }}>{task.title}</span>
-                                </div>
-                                <span style={{ color:'var(--accent)', fontWeight:700 }}>${task.reward}</span>
-                                {task.location && <span style={{ color:'var(--muted)', fontSize:'0.8rem', marginLeft:'0.75rem' }}>📍 {task.location}</span>}
-                            </div>
-                            <div style={{ display:'flex', gap:'0.5rem', flexWrap:'wrap' }}>
-                                {(task.status==='taken'||task.status==='done') && (
-                                    <button className="btn btn-secondary btn-sm" onClick={() => setChat(task)}>Chat</button>
-                                )}
-                                {task.status==='taken' && task.user_id===user.id && (
-                                    <button className="btn btn-sm" style={{background:'var(--accent2)',color:'var(--bg)'}} onClick={() => handleComplete(task.id)}>Mark Done</button>
-                                )}
-                                {task.status==='done' && (
-                                    <button className="btn btn-secondary btn-sm" onClick={() => setModal({ type:'review', task })}>Review</button>
-                                )}
-                                {task.user_id===user.id && task.status==='open' && (
-                                    <button className="btn btn-ghost btn-sm" style={{color:'var(--danger)',borderColor:'var(--danger)'}} onClick={() => deleteTask(task.id)}>Delete</button>
-                                )}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
+            <h3 style={{ fontSize:'10px', fontWeight:900, textTransform:'uppercase', letterSpacing:'0.25em', color:'#aaa', marginBottom:'1rem' }}>{title}</h3>
+            {items.length===0
+                ? <div className="standard-card" style={{ padding:'2rem', textAlign:'center', color:'#9ca3af', fontSize:'0.9rem', borderRadius:'1.5rem' }}>{empty}</div>
+                : <div style={{ display:'flex', flexDirection:'column', gap:'0.75rem' }}>{items.map(t=><Row key={t.id} task={t}/>)}</div>
+            }
         </div>
     );
 
     return (
-        <div style={{ maxWidth:800, margin:'0 auto', padding:'2.5rem 1.5rem' }} className="fade-up">
-            <h2 style={{ fontSize:'2rem', fontWeight:800, marginBottom:'2rem' }}>My Tasks</h2>
-            <Section title="Tasks I Posted" items={myPosted} empty="You haven't posted any tasks yet." />
-            <Section title="Tasks I Accepted" items={myAccepted} empty="You haven't accepted any tasks yet." />
+        <div style={{ maxWidth:800, margin:'0 auto', paddingTop:'2.5rem' }} className="slide-up">
+            <h2 style={{ fontSize:'2.5rem', fontWeight:950, letterSpacing:'-0.04em', marginBottom:'2rem' }}>My Tasks</h2>
+            <Section title="Tasks I Posted" items={posted} empty="You haven't posted any tasks yet." />
+            <Section title="Tasks I Accepted" items={accepted} empty="You haven't accepted any tasks yet." />
         </div>
     );
 }
 
-// ── PROFILE VIEW ──────────────────────────────────────────────────────────────
+// ── PROFILE ───────────────────────────────────────────────────────────────────
 function ProfileView({ user, profile, setProfile, tasks, onSignOut }) {
-    const [editing, setEditing]   = useState(false);
-    const [form, setForm]         = useState({ full_name:'', bio:'', username:'' });
-    const [reviews, setReviews]   = useState([]);
+    const [editing, setEditing] = useState(false);
+    const [form, setForm]       = useState({ full_name:'', bio:'', username:'' });
+    const [reviews, setReviews] = useState([]);
 
-    useEffect(() => {
-        if (profile) setForm({ full_name: profile.full_name||'', bio: profile.bio||'', username: profile.username||'' });
-    }, [profile]);
+    useEffect(() => { if (profile) setForm({ full_name:profile.full_name||'', bio:profile.bio||'', username:profile.username||'' }); }, [profile]);
+    useEffect(() => { if (user) sb.from('reviews').select('*, profiles!reviewer_id(username,avatar_seed)').eq('reviewed_id',user.id).then(({data})=>setReviews(data||[])); }, [user]);
 
-    useEffect(() => {
-        if (user) sb.from('reviews').select('*, profiles!reviewer_id(username,avatar_seed)').eq('reviewed_id', user.id).then(({ data }) => setReviews(data||[]));
-    }, [user]);
-
-    const saveProfile = async () => {
-        const { data } = await sb.from('profiles').update({ full_name: form.full_name, bio: form.bio, username: form.username }).eq('id', user.id).select().single();
+    const save = async () => {
+        const { data } = await sb.from('profiles').update({ full_name:form.full_name, bio:form.bio, username:form.username }).eq('id',user.id).select().single();
         if (data) setProfile(data);
         setEditing(false);
     };
 
-    if (!user || !profile) return null;
-
-    const myTasks    = tasks.filter(t => t.user_id === user.id);
-    const completed  = myTasks.filter(t => t.status === 'done').length;
-    const avgRating  = reviews.length ? (reviews.reduce((s,r) => s+r.rating,0)/reviews.length).toFixed(1) : '—';
+    if (!user||!profile) return null;
+    const myTasks   = tasks.filter(t=>t.user_id===user.id);
+    const completed = myTasks.filter(t=>t.status==='done').length;
+    const avgRating = reviews.length ? (reviews.reduce((s,r)=>s+r.rating,0)/reviews.length).toFixed(1) : '—';
 
     return (
-        <div style={{ maxWidth:900, margin:'0 auto', padding:'2.5rem 1.5rem' }} className="fade-up">
-            <h2 style={{ fontSize:'2rem', fontWeight:800, marginBottom:'2rem' }}>My Profile</h2>
-            <div className="profile-grid">
-                {/* Left col */}
+        <div style={{ maxWidth:900, margin:'0 auto', paddingTop:'2.5rem' }} className="slide-up">
+            <h2 style={{ fontSize:'2.5rem', fontWeight:950, letterSpacing:'-0.04em', marginBottom:'2rem' }}>My Profile</h2>
+            <div style={{ display:'grid', gridTemplateColumns:'280px 1fr', gap:'1.5rem' }}>
+                {/* Left */}
                 <div style={{ display:'flex', flexDirection:'column', gap:'1rem' }}>
-                    <div className="card" style={{ padding:'1.5rem', textAlign:'center' }}>
-                        <img src={avatarUrl(profile.avatar_seed||user.id)} width="80" height="80" className="avatar" style={{ margin:'0 auto 1rem', display:'block', width:80, height:80 }} alt="" />
+                    <div className="standard-card" style={{ padding:'2rem', textAlign:'center' }}>
+                        <img src={avatarUrl(profile.avatar_seed||user.id)} width={80} height={80} style={{ borderRadius:16, border:'2px solid #e5e7eb', margin:'0 auto 1rem', display:'block' }} />
                         {editing ? (
                             <div style={{ display:'flex', flexDirection:'column', gap:'0.75rem', textAlign:'left' }}>
-                                <div><label className="label">Username</label><input className="input" value={form.username} onChange={e => setForm(f=>({...f,username:e.target.value}))} /></div>
-                                <div><label className="label">Full Name</label><input className="input" value={form.full_name} onChange={e => setForm(f=>({...f,full_name:e.target.value}))} /></div>
-                                <div><label className="label">Bio</label><textarea className="input" rows="3" value={form.bio} onChange={e => setForm(f=>({...f,bio:e.target.value}))} /></div>
-                                <button className="btn btn-primary" onClick={saveProfile}>Save</button>
-                                <button className="btn btn-ghost btn-sm" onClick={() => setEditing(false)}>Cancel</button>
+                                <div><label className="sq-label">Username</label><input className="sq-input" value={form.username} onChange={e=>setForm(f=>({...f,username:e.target.value}))} /></div>
+                                <div><label className="sq-label">Full Name</label><input className="sq-input" value={form.full_name} onChange={e=>setForm(f=>({...f,full_name:e.target.value}))} /></div>
+                                <div><label className="sq-label">Bio</label><textarea className="sq-input" rows={3} value={form.bio} onChange={e=>setForm(f=>({...f,bio:e.target.value}))} /></div>
+                                <button className="btn-black" onClick={save}>Save</button>
+                                <button className="btn-outline btn-sm" onClick={()=>setEditing(false)}>Cancel</button>
                             </div>
                         ) : (
                             <>
-                                <h3 style={{ fontWeight:800, fontSize:'1.2rem' }}>{profile.full_name || profile.username}</h3>
-                                <p style={{ color:'var(--muted)', fontSize:'0.82rem', marginBottom:'0.25rem' }}>@{profile.username}</p>
-                                <p style={{ color:'var(--muted)', fontSize:'0.85rem', lineHeight:1.5, margin:'0.75rem 0' }}>{profile.bio || 'No bio yet.'}</p>
-                                <button className="btn btn-ghost btn-sm" style={{ width:'100%', justifyContent:'center' }} onClick={() => setEditing(true)}>Edit Profile</button>
+                                <h3 style={{ fontWeight:900, fontSize:'1.2rem', marginBottom:4 }}>{profile.full_name||profile.username}</h3>
+                                <p style={{ color:'#9ca3af', fontSize:'12px', fontWeight:700, marginBottom:8 }}>@{profile.username}</p>
+                                <p style={{ color:'#6b7280', fontSize:'13px', lineHeight:1.5, marginBottom:'1rem' }}>{profile.bio||'No bio yet.'}</p>
+                                <button className="btn-outline btn-sm" style={{ width:'100%' }} onClick={()=>setEditing(true)}>Edit Profile</button>
                             </>
                         )}
                     </div>
-
-                    {/* Stats */}
                     <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0.75rem' }}>
-                        <div className="stat-box"><div className="stat-num">{myTasks.length}</div><div className="stat-label">Posted</div></div>
-                        <div className="stat-box"><div className="stat-num">{completed}</div><div className="stat-label">Completed</div></div>
-                        <div className="stat-box"><div className="stat-num">{avgRating}</div><div className="stat-label">Avg Rating</div></div>
-                        <div className="stat-box"><div className="stat-num">{reviews.length}</div><div className="stat-label">Reviews</div></div>
+                        {[['Posted',myTasks.length],['Done',completed],['Rating',avgRating],['Reviews',reviews.length]].map(([l,v])=>(
+                            <div key={l} className="standard-card" style={{ padding:'1rem', textAlign:'center', borderRadius:'1.25rem' }}>
+                                <div style={{ fontSize:'1.6rem', fontWeight:950, letterSpacing:'-0.03em' }}>{v}</div>
+                                <div style={{ fontSize:'9px', fontWeight:900, textTransform:'uppercase', letterSpacing:'0.15em', color:'#aaa', marginTop:2 }}>{l}</div>
+                            </div>
+                        ))}
                     </div>
-
-                    <button className="btn btn-ghost" style={{ width:'100%', justifyContent:'center', color:'var(--danger)', borderColor:'var(--danger)' }} onClick={onSignOut}>Sign Out</button>
+                    <button className="btn-outline" style={{ color:'#ef4444', borderColor:'#ef4444', width:'100%' }} onClick={onSignOut}>Sign Out</button>
                 </div>
-
-                {/* Right col — reviews */}
+                {/* Right — reviews */}
                 <div>
-                    <h3 style={{ fontWeight:700, fontSize:'0.8rem', textTransform:'uppercase', letterSpacing:'0.08em', color:'var(--muted)', marginBottom:'1rem' }}>Reviews</h3>
-                    {reviews.length === 0 ? (
-                        <div className="card" style={{ padding:'2rem', textAlign:'center', color:'var(--muted)' }}>No reviews yet.</div>
-                    ) : (
-                        <div style={{ display:'flex', flexDirection:'column', gap:'0.75rem' }}>
-                            {reviews.map(r => (
-                                <div key={r.id} className="review-card">
-                                    <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'0.4rem' }}>
-                                        <div style={{ display:'flex', alignItems:'center', gap:'0.5rem' }}>
-                                            <img src={avatarUrl(r.profiles?.avatar_seed||r.reviewer_id)} width="24" height="24" className="avatar" alt="" />
-                                            <span style={{ fontWeight:600, fontSize:'0.85rem' }}>{r.profiles?.username || 'user'}</span>
+                    <h3 style={{ fontSize:'10px', fontWeight:900, textTransform:'uppercase', letterSpacing:'0.25em', color:'#aaa', marginBottom:'1rem' }}>Reviews</h3>
+                    {reviews.length===0
+                        ? <div className="standard-card" style={{ padding:'2rem', textAlign:'center', color:'#9ca3af', borderRadius:'1.5rem' }}>No reviews yet.</div>
+                        : <div style={{ display:'flex', flexDirection:'column', gap:'0.75rem' }}>
+                            {reviews.map(r=>(
+                                <div key={r.id} className="standard-card" style={{ padding:'1.25rem 1.5rem', borderRadius:'1.5rem' }}>
+                                    <div style={{ display:'flex', justifyContent:'space-between', marginBottom:6 }}>
+                                        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                                            <img src={avatarUrl(r.profiles?.avatar_seed||r.reviewer_id)} width={28} height={28} style={{ borderRadius:8 }} />
+                                            <span style={{ fontWeight:800, fontSize:'0.88rem' }}>{r.profiles?.username||'user'}</span>
                                         </div>
-                                        <span style={{ color:'var(--accent)', fontWeight:700, fontSize:'0.9rem' }}>{stars(r.rating)}</span>
+                                        <span style={{ color:'#f59e0b', fontWeight:700 }}>{'★'.repeat(r.rating)}{'☆'.repeat(5-r.rating)}</span>
                                     </div>
-                                    <p style={{ color:'var(--muted)', fontSize:'0.85rem', lineHeight:1.5 }}>{r.comment}</p>
+                                    <p style={{ color:'#6b7280', fontSize:'0.86rem', lineHeight:1.5 }}>{r.comment}</p>
                                 </div>
                             ))}
-                        </div>
-                    )}
+                          </div>
+                    }
                 </div>
             </div>
         </div>
@@ -726,72 +773,65 @@ function ChatPanel({ task, user, onClose }) {
     const [roomId, setRoomId] = useState(null);
     const bottomRef           = useRef(null);
 
-    // Get or create chat room
     useEffect(() => {
-        if (!user || !task) return;
+        if (!user||!task) return;
         const init = async () => {
-            let { data: room } = await sb.from('chat_rooms').select('*').eq('task_id', task.id).single();
+            let { data: room } = await sb.from('chat_rooms').select('*').eq('task_id',task.id).single();
             if (!room) {
-                const { data: newRoom } = await sb.from('chat_rooms').insert({ task_id: task.id, user1_id: task.user_id, user2_id: user.id, created_at: new Date().toISOString() }).select().single();
-                room = newRoom;
+                const { data: nr } = await sb.from('chat_rooms').insert({ task_id:task.id, user1_id:task.user_id, user2_id:user.id, created_at:new Date().toISOString() }).select().single();
+                room = nr;
             }
             if (room) {
                 setRoomId(room.id);
-                const { data: history } = await sb.from('chat_messages').select('*').eq('room_id', room.id).order('created_at', { ascending: true });
-                setMsgs(history || []);
+                const { data: hist } = await sb.from('chat_messages').select('*').eq('room_id',room.id).order('created_at',{ascending:true});
+                setMsgs(hist||[]);
             }
         };
         init();
     }, [task, user]);
 
-    // Realtime subscription
     useEffect(() => {
         if (!roomId) return;
-        const channel = sb.channel(`room-${roomId}`)
+        const ch = sb.channel(`room-${roomId}`)
             .on('postgres_changes', { event:'INSERT', schema:'public', table:'chat_messages', filter:`room_id=eq.${roomId}` },
-                payload => setMsgs(m => [...m, payload.new]))
+                p => setMsgs(m=>[...m,p.new]))
             .subscribe();
-        return () => sb.removeChannel(channel);
+        return () => sb.removeChannel(ch);
     }, [roomId]);
 
-    // Scroll to bottom
     useEffect(() => { bottomRef.current?.scrollIntoView({ behavior:'smooth' }); }, [msgs]);
 
     const send = async () => {
-        if (!text.trim() || !roomId) return;
-        await sb.from('chat_messages').insert({ room_id: roomId, sender_id: user.id, message: text.trim(), created_at: new Date().toISOString() });
+        if (!text.trim()||!roomId) return;
+        await sb.from('chat_messages').insert({ room_id:roomId, sender_id:user.id, message:text.trim(), created_at:new Date().toISOString() });
         setText('');
     };
 
     return (
-        <div className="chat-wrap fade-up">
+        <div className="chat-panel slide-up">
             <div className="chat-header">
                 <div>
-                    <div style={{ display:'flex', alignItems:'center', gap:'0.5rem', marginBottom:'0.2rem' }}>
-                        <span className="online-dot"></span>
-                        <span style={{ fontFamily:'Syne', fontWeight:700, fontSize:'0.9rem' }}>Live Chat</span>
+                    <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:2 }}>
+                        <div style={{ width:8, height:8, background:'#10b981', borderRadius:'50%', boxShadow:'0 0 6px #10b981' }}></div>
+                        <span style={{ fontWeight:900, fontSize:'0.9rem' }}>Live Chat</span>
                     </div>
-                    <div style={{ color:'var(--muted)', fontSize:'0.78rem' }}>{task.title}</div>
+                    <div style={{ color:'#555', fontSize:'11px', fontWeight:600 }}>{task.title}</div>
                 </div>
-                <button className="btn btn-ghost btn-sm" onClick={onClose}>✕</button>
+                <button onClick={onClose} style={{ background:'none', border:'none', color:'#fff', cursor:'pointer', fontSize:'1.2rem', padding:'4px 8px', borderRadius:8 }}>✕</button>
             </div>
             <div className="chat-messages">
-                {msgs.length === 0 && (
-                    <div style={{ textAlign:'center', color:'var(--muted)', fontSize:'0.82rem', padding:'2rem' }}>
-                        No messages yet. Say hello!
-                    </div>
-                )}
-                {msgs.map(m => (
-                    <div key={m.id}>
-                        <div className={`chat-bubble ${m.sender_id === user.id ? 'mine' : 'theirs'}`}>{m.message}</div>
-                        <div style={{ fontSize:'0.68rem', color:'var(--muted)', marginTop:'0.2rem', textAlign: m.sender_id === user.id ? 'right' : 'left', paddingInline:'0.25rem' }}>{ago(m.created_at)}</div>
+                {msgs.length===0 && <div style={{ textAlign:'center', color:'#ccc', fontSize:'13px', padding:'2rem' }}>No messages yet. Say hello!</div>}
+                {msgs.map(m=>(
+                    <div key={m.id} style={{ display:'flex', flexDirection:'column', gap:3, alignItems: m.sender_id===user.id?'flex-end':'flex-start' }}>
+                        <div className={m.sender_id===user.id?'bubble-mine':'bubble-theirs'}>{m.message}</div>
+                        <span style={{ fontSize:'10px', color:'#ccc', fontWeight:600, paddingInline:4 }}>{ago(m.created_at)}</span>
                     </div>
                 ))}
-                <div ref={bottomRef} />
+                <div ref={bottomRef}/>
             </div>
             <div className="chat-input-row">
-                <input className="chat-input" placeholder="Type a message..." value={text} onChange={e => setText(e.target.value)} onKeyDown={e => e.key === 'Enter' && send()} />
-                <button className="btn btn-primary btn-sm" onClick={send}>Send</button>
+                <input className="chat-input" placeholder="Type a message..." value={text} onChange={e=>setText(e.target.value)} onKeyDown={e=>e.key==='Enter'&&send()} />
+                <button className="btn-black btn-sm" onClick={send}>Send</button>
             </div>
         </div>
     );
@@ -801,96 +841,71 @@ function ChatPanel({ task, user, onClose }) {
 function ReviewModal({ task, user, onSubmit, onClose }) {
     const [rating, setRating]   = useState(0);
     const [comment, setComment] = useState('');
-    const reviewedId = user?.id === task.user_id ? task.accepted_by : task.user_id;
+    const reviewedId = user?.id===task.user_id ? task.accepted_by : task.user_id;
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="modal" style={{ padding:'2rem' }} onClick={e => e.stopPropagation()}>
-                <h3 style={{ fontWeight:800, fontSize:'1.3rem', marginBottom:'0.5rem' }}>Leave a Review</h3>
-                <p style={{ color:'var(--muted)', marginBottom:'1.5rem', fontSize:'0.88rem' }}>How did it go with <strong>{task.title}</strong>?</p>
-                <div style={{ display:'flex', gap:'0.25rem', marginBottom:'1.25rem' }}>
-                    {[1,2,3,4,5].map(s => (
-                        <span key={s} className={`star ${rating>=s?'lit':''}`} onClick={() => setRating(s)}>★</span>
+            <div className="modal-box" onClick={e=>e.stopPropagation()}>
+                <h3 style={{ fontWeight:900, fontSize:'1.5rem', marginBottom:6 }}>Leave a Review</h3>
+                <p style={{ color:'#9ca3af', marginBottom:'1.5rem', fontSize:'0.88rem' }}>How did it go with <strong>{task.title}</strong>?</p>
+                <div style={{ display:'flex', gap:4, marginBottom:'1.25rem' }}>
+                    {[1,2,3,4,5].map(s=>(
+                        <span key={s} className={`star ${rating>=s?'lit':''}`} onClick={()=>setRating(s)}>★</span>
                     ))}
                 </div>
                 <div style={{ marginBottom:'1.25rem' }}>
-                    <label className="label">Comment</label>
-                    <textarea className="input" rows="4" placeholder="Share your experience..." value={comment} onChange={e => setComment(e.target.value)} />
+                    <label className="sq-label">Comment</label>
+                    <textarea className="sq-input" rows={4} placeholder="Share your experience..." value={comment} onChange={e=>setComment(e.target.value)} />
                 </div>
-                <div style={{ display:'flex', gap:'0.75rem' }}>
-                    <button className="btn btn-primary" onClick={() => { if (!rating) { alert('Please select a rating.'); return; } onSubmit({ task_id: task.id, reviewed_id: reviewedId, rating, comment }); }}>Submit Review</button>
-                    <button className="btn btn-ghost" onClick={onClose}>Cancel</button>
+                <div style={{ display:'flex', gap:10 }}>
+                    <button className="btn-black" onClick={()=>{ if(!rating){alert('Please select a rating.');return;} onSubmit({task_id:task.id,reviewed_id:reviewedId,rating,comment}); }}>Submit</button>
+                    <button className="btn-outline" onClick={onClose}>Cancel</button>
                 </div>
             </div>
         </div>
     );
 }
 
-// ── LOGIN MODAL ───────────────────────────────────────────────────────────────
-function LoginModal({ onLogin, onGoogle, onSwitch, onClose, error }) {
-    const [email, setEmail]       = useState('');
-    const [password, setPassword] = useState('');
-    return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal" style={{ padding:'2rem' }} onClick={e => e.stopPropagation()}>
-                <h3 style={{ fontWeight:800, fontSize:'1.4rem', marginBottom:'0.25rem' }}>Welcome back</h3>
-                <p style={{ color:'var(--muted)', fontSize:'0.85rem', marginBottom:'1.5rem' }}>Log in to accept tasks and get paid.</p>
-                <button className="btn btn-secondary" style={{ width:'100%', justifyContent:'center', marginBottom:'1.25rem' }} onClick={onGoogle}>
-                    <span style={{ fontSize:'1.1rem' }}>G</span> Continue with Google
-                </button>
-                <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', marginBottom:'1.25rem' }}>
-                    <hr style={{ flex:1, border:'none', borderTop:'1px solid var(--border)' }} />
-                    <span style={{ color:'var(--muted)', fontSize:'0.78rem' }}>or</span>
-                    <hr style={{ flex:1, border:'none', borderTop:'1px solid var(--border)' }} />
-                </div>
-                <div style={{ display:'flex', flexDirection:'column', gap:'0.75rem' }}>
-                    <div><label className="label">Email</label><input className="input" type="email" placeholder="you@email.com" value={email} onChange={e => setEmail(e.target.value)} /></div>
-                    <div><label className="label">Password</label><input className="input" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={e => e.key==='Enter' && onLogin({email,password})} /></div>
-                    {error && <p style={{ color:'var(--danger)', fontSize:'0.82rem' }}>{error}</p>}
-                    <button className="btn btn-primary" style={{ width:'100%', justifyContent:'center' }} onClick={() => onLogin({email,password})}>Log In</button>
-                </div>
-                <p style={{ textAlign:'center', marginTop:'1.25rem', fontSize:'0.83rem', color:'var(--muted)' }}>
-                    No account? <button style={{ background:'none', border:'none', color:'var(--accent)', cursor:'pointer', fontWeight:700 }} onClick={onSwitch}>Sign Up</button>
-                </p>
-            </div>
-        </div>
-    );
-}
-
-// ── SIGNUP MODAL ──────────────────────────────────────────────────────────────
-function SignupModal({ onSignup, onGoogle, onSwitch, onClose, error }) {
+// ── AUTH MODAL ────────────────────────────────────────────────────────────────
+function AuthModal({ mode, onLogin, onSignup, onGoogle, onClose, error, setError, switchMode }) {
     const [form, setForm] = useState({ email:'', password:'', username:'', full_name:'' });
-    const set = (k,v) => setForm(f => ({ ...f, [k]:v }));
+    const set = (k,v) => setForm(f=>({...f,[k]:v}));
+    const isLogin = mode==='login';
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="modal" style={{ padding:'2rem' }} onClick={e => e.stopPropagation()}>
-                <h3 style={{ fontWeight:800, fontSize:'1.4rem', marginBottom:'0.25rem' }}>Create account</h3>
-                <p style={{ color:'var(--muted)', fontSize:'0.85rem', marginBottom:'1.5rem' }}>Join SideQuest — post tasks or get paid to do them.</p>
-                <button className="btn btn-secondary" style={{ width:'100%', justifyContent:'center', marginBottom:'1.25rem' }} onClick={onGoogle}>
-                    <span style={{ fontSize:'1.1rem' }}>G</span> Continue with Google
+            <div className="modal-box" onClick={e=>e.stopPropagation()}>
+                <h3 style={{ fontWeight:900, fontSize:'1.8rem', letterSpacing:'-0.03em', marginBottom:6 }}>{isLogin?'Welcome back':'Create account'}</h3>
+                <p style={{ color:'#9ca3af', fontSize:'0.88rem', marginBottom:'1.5rem' }}>{isLogin?'Log in to accept tasks and get paid.':'Join SideQuest — post tasks or earn money completing them.'}</p>
+
+                <button className="btn-outline" style={{ width:'100%', justifyContent:'center', marginBottom:'1.25rem', display:'flex', alignItems:'center', gap:8 }} onClick={onGoogle}>
+                    <span style={{ fontWeight:900 }}>G</span> Continue with Google
                 </button>
-                <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', marginBottom:'1.25rem' }}>
-                    <hr style={{ flex:1, border:'none', borderTop:'1px solid var(--border)' }} />
-                    <span style={{ color:'var(--muted)', fontSize:'0.78rem' }}>or</span>
-                    <hr style={{ flex:1, border:'none', borderTop:'1px solid var(--border)' }} />
+
+                <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:'1.25rem' }}>
+                    <hr style={{ flex:1, border:'none', borderTop:'1px solid #e5e7eb' }} />
+                    <span style={{ color:'#ccc', fontSize:'11px', fontWeight:700 }}>OR</span>
+                    <hr style={{ flex:1, border:'none', borderTop:'1px solid #e5e7eb' }} />
                 </div>
-                <div style={{ display:'flex', flexDirection:'column', gap:'0.75rem' }}>
-                    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0.75rem' }}>
-                        <div><label className="label">Full Name</label><input className="input" placeholder="Jane Doe" value={form.full_name} onChange={e => set('full_name',e.target.value)} /></div>
-                        <div><label className="label">Username</label><input className="input" placeholder="janedoe" value={form.username} onChange={e => set('username',e.target.value)} /></div>
-                    </div>
-                    <div><label className="label">Email</label><input className="input" type="email" placeholder="you@email.com" value={form.email} onChange={e => set('email',e.target.value)} /></div>
-                    <div><label className="label">Password</label><input className="input" type="password" placeholder="Min 6 characters" value={form.password} onChange={e => set('password',e.target.value)} /></div>
-                    {error && <p style={{ color:'var(--danger)', fontSize:'0.82rem' }}>{error}</p>}
-                    <button className="btn btn-primary" style={{ width:'100%', justifyContent:'center' }}
-                        onClick={() => {
-                            if (!form.email||!form.password||!form.username) { alert('All fields required.'); return; }
-                            onSignup(form);
-                        }}>
-                        Create Account
+
+                <div style={{ display:'flex', flexDirection:'column', gap:'0.85rem' }}>
+                    {!isLogin && (
+                        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0.75rem' }}>
+                            <div><label className="sq-label">Full Name</label><input className="sq-input" placeholder="Jane Doe" value={form.full_name} onChange={e=>set('full_name',e.target.value)} /></div>
+                            <div><label className="sq-label">Username</label><input className="sq-input" placeholder="janedoe" value={form.username} onChange={e=>set('username',e.target.value)} /></div>
+                        </div>
+                    )}
+                    <div><label className="sq-label">Email</label><input className="sq-input" type="email" placeholder="you@email.com" value={form.email} onChange={e=>set('email',e.target.value)} /></div>
+                    <div><label className="sq-label">Password</label><input className="sq-input" type="password" placeholder="Min 6 characters" value={form.password} onChange={e=>set('password',e.target.value)} onKeyDown={e=>e.key==='Enter'&&(isLogin?onLogin(form):onSignup(form))} /></div>
+                    {error && <p style={{ color:'#ef4444', fontSize:'13px', fontWeight:600 }}>{error}</p>}
+                    <button className="btn-black" style={{ width:'100%', padding:'1rem', borderRadius:'1.1rem', fontSize:'0.9rem' }}
+                        onClick={() => { if(!isLogin&&(!form.username||!form.full_name)){alert('All fields required.');return;} isLogin?onLogin(form):onSignup(form); }}>
+                        {isLogin?'Log In':'Create Account'}
                     </button>
                 </div>
-                <p style={{ textAlign:'center', marginTop:'1.25rem', fontSize:'0.83rem', color:'var(--muted)' }}>
-                    Already have one? <button style={{ background:'none', border:'none', color:'var(--accent)', cursor:'pointer', fontWeight:700 }} onClick={onSwitch}>Log In</button>
+                <p style={{ textAlign:'center', marginTop:'1.25rem', fontSize:'13px', color:'#9ca3af' }}>
+                    {isLogin?'No account?':'Already have one?'}{' '}
+                    <button style={{ background:'none', border:'none', fontWeight:900, cursor:'pointer', color:'#000', textDecoration:'underline' }} onClick={switchMode}>
+                        {isLogin?'Sign Up':'Log In'}
+                    </button>
                 </p>
             </div>
         </div>
