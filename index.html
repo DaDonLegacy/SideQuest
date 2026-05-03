@@ -4,59 +4,320 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SideQuest | Real Tasks. Real Rewards.</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; }
+        
+        :root {
+            --primary: #000000;
+            --accent: #4A90E2;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #F8FAFC; 
+            overflow-x: hidden;
+            margin: 0;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .card-shadow { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.03), 0 8px 10px -6px rgba(0, 0, 0, 0.03); }
+        
+        /* Animations for UI interactions */
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Responsive Grid fixes */
+        .task-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
     </style>
 </head>
 <body>
 
-    <nav class="flex items-center justify-between px-10 h-20 bg-white border-b border-gray-200 fixed top-0 w-full z-50">
-        <div class="flex flex-col cursor-pointer" onclick="window.location.href='/'">
-            <h1 class="text-2xl font-extrabold text-black leading-none">SideQuest</h1>
-            <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">Real Tasks. Real Rewards.</span>
-        </div>
+    <div id="root"></div>
 
-        <div class="hidden md:flex gap-8 flex-grow ml-12">
-            <a href="#browse" class="text-sm font-semibold text-gray-700 hover:text-black">Browse</a>
-            <a href="#post" class="text-sm font-semibold text-gray-700 hover:text-black">Post a Quest</a>
-            <a href="#categories" class="text-sm font-semibold text-gray-700 hover:text-black">Categories</a>
-        </div>
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
 
-        <div class="flex items-center gap-4">
-            <button id="loginBtn" class="text-sm font-bold text-gray-900 px-4 py-2 hover:bg-gray-100 rounded-lg transition">Log In</button>
-            <button id="signupBtn" class="text-sm font-bold bg-black text-white px-6 py-2.5 rounded-lg hover:bg-gray-800 transition shadow-lg">Sign Up</button>
-        </div>
-    </nav>
-
-    <div class="h-20"></div>
-
-    <main class="p-10 text-center">
-        <h2 class="text-4xl font-black mt-20">The Marketplace for Serious Side Hustlers</h2>
-        <p class="text-gray-500 mt-4">Complete real-world tasks and earn verified rewards.</p>
-    </main>
-
-    <script>
         // --- SUPABASE CONFIG ---
-        // Replace these with your actual keys from Supabase Settings > API
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Replace with your actual credentials from Supabase Dashboard
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // --- BUTTON LOGIC ---
-        document.getElementById('loginBtn').addEventListener('click', async () => {
-            const { error } = await supabase.auth.signInWithOAuth({
-                provider: 'google',
-                options: { redirectTo: window.location.origin }
+        const App = () => {
+            const [user, setUser] = useState(null);
+            const [tasks, setTasks] = useState([]);
+            const [searchQuery, setSearchQuery] = useState("");
+            const [activeChat, setActiveChat] = useState(null);
+            const [view, setView] = useState('browse'); // 'browse', 'post', 'profile'
+            const [loading, setLoading] = useState(true);
+
+            useEffect(() => {
+                // Check current session
+                supabase.auth.getSession().then(({ data: { session } }) => {
+                    setUser(session?.user ?? null);
+                });
+
+                // Listen for auth changes
+                const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+                    setUser(session?.user ?? null);
+                });
+
+                fetchTasks();
+                setLoading(false);
+
+                return () => authListener.subscription.unsubscribe();
+            }, []);
+
+            const fetchTasks = async () => {
+                const { data, error } = await supabase
+                    .from('tasks')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                if (!error) setTasks(data || []);
+            };
+
+            const handleLogin = async () => {
+                const { error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: { redirectTo: window.location.origin }
+                });
+                if (error) console.error("Login error:", error.message);
+            };
+
+            const handleLogout = async () => {
+                await supabase.auth.signOut();
+            };
+
+            // --- COMPONENTS ---
+
+            const Navbar = () => (
+                <nav className="flex items-center justify-between px-6 md:px-12 h-20 bg-white border-b border-gray-100 fixed top-0 w-full z-50">
+                    {/* LEFT: Logo & Slogan */}
+                    <div className="flex flex-col cursor-pointer" onClick={() => setView('browse')}>
+                        <h1 className="text-2xl font-extrabold text-black tracking-tighter leading-none">SideQuest</h1>
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+                            Real Tasks. Real Rewards.
+                        </span>
+                    </div>
+
+                    {/* MIDDLE: Links */}
+                    <div className="hidden lg:flex items-center gap-10 flex-grow justify-center">
+                        <button onClick={() => setView('browse')} className={`text-[15px] font-bold ${view === 'browse' ? 'text-black' : 'text-gray-400 hover:text-black'} transition`}>Browse</button>
+                        <button onClick={() => setView('post')} className={`text-[15px] font-bold ${view === 'post' ? 'text-black' : 'text-gray-400 hover:text-black'} transition`}>Post a Quest</button>
+                        <button className="text-[15px] font-bold text-gray-400 hover:text-black transition">Categories</button>
+                    </div>
+
+                    {/* RIGHT: Auth Buttons */}
+                    <div className="flex items-center gap-4">
+                        {!user ? (
+                            <>
+                                <button onClick={handleLogin} className="text-[15px] font-bold text-gray-700 px-4 py-2 hover:text-black transition">Log In</button>
+                                <button className="text-[15px] font-bold bg-black text-white px-6 py-2.5 rounded-xl hover:bg-gray-800 transition shadow-lg shadow-gray-200">Sign Up</button>
+                            </>
+                        ) : (
+                            <div className="flex items-center gap-4">
+                                <button onClick={() => setView('profile')} className="w-10 h-10 rounded-full bg-gray-200 border-2 border-white shadow-sm overflow-hidden">
+                                    <img src={user.user_metadata.avatar_url} alt="profile" />
+                                </button>
+                                <button onClick={handleLogout} className="text-sm font-bold text-red-500">Log Out</button>
+                            </div>
+                        )}
+                    </div>
+                </nav>
+            );
+
+            const TaskCard = ({ task }) => (
+                <div className="bg-white p-6 rounded-3xl border border-gray-100 card-shadow flex flex-col justify-between hover:scale-[1.02] transition-transform cursor-pointer">
+                    <div>
+                        <div className="flex justify-between items-start mb-4">
+                            <span className="bg-blue-50 text-blue-600 text-[11px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider italic">
+                                {task.category || 'Quest'}
+                            </span>
+                            <span className="text-lg font-black text-black">${task.reward}</span>
+                        </div>
+                        <h3 className="text-xl font-extrabold text-gray-900 mb-2 leading-tight">{task.title}</h3>
+                        <p className="text-gray-500 text-sm line-clamp-2 mb-4 leading-relaxed">{task.description}</p>
+                    </div>
+                    <div className="flex items-center justify-between pt-4 border-t border-gray-50 mt-4">
+                        <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-gray-100"></div>
+                            <span className="text-xs font-bold text-gray-400 italic">Posted by {task.author_name || 'User'}</span>
+                        </div>
+                        <button 
+                            onClick={() => setActiveChat({taskId: task.id, title: task.title})}
+                            className="bg-gray-900 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-black transition"
+                        >
+                            Accept Quest
+                        </button>
+                    </div>
+                </div>
+            );
+
+            const ChatWindow = () => {
+                if (!activeChat) return null;
+                return (
+                    <div className="fixed bottom-6 right-6 w-96 h-[500px] bg-white rounded-3xl shadow-2xl border border-gray-100 flex flex-col z-[100] fade-in overflow-hidden">
+                        <div className="p-5 bg-black text-white flex justify-between items-center">
+                            <div>
+                                <h4 className="text-sm font-bold leading-none">{activeChat.title}</h4>
+                                <span className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Active Quest Chat</span>
+                            </div>
+                            <button onClick={() => setActiveChat(null)} className="text-gray-400 hover:text-white">
+                                <i data-lucide="x" className="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        <div className="flex-grow p-4 overflow-y-auto bg-gray-50 flex flex-col gap-3">
+                            <div className="bg-white p-3 rounded-2xl rounded-bl-none shadow-sm max-w-[80%] text-sm font-medium text-gray-700">
+                                Hey! Is this task still available?
+                            </div>
+                            <div className="bg-black text-white p-3 rounded-2xl rounded-br-none shadow-sm max-w-[80%] ml-auto text-sm font-medium">
+                                Yes! I need it done by tomorrow afternoon.
+                            </div>
+                        </div>
+                        <div className="p-4 bg-white border-t border-gray-100 flex gap-2">
+                            <input type="text" placeholder="Type a message..." className="flex-grow bg-gray-100 border-none rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-black outline-none" />
+                            <button className="bg-black text-white p-2 rounded-xl">
+                                <i data-lucide="send" className="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                );
+            };
+
+            const ProfileView = () => (
+                <div className="max-w-4xl mx-auto py-12 px-6 fade-in">
+                    <div className="bg-white rounded-[2.5rem] p-10 border border-gray-100 card-shadow text-center">
+                        <div className="w-24 h-24 rounded-full bg-gray-100 mx-auto mb-6 overflow-hidden border-4 border-white shadow-md">
+                            <img src={user?.user_metadata?.avatar_url || ''} alt="user" />
+                        </div>
+                        <h2 className="text-3xl font-black text-gray-900">{user?.user_metadata?.full_name || 'Adventurer'}</h2>
+                        <p className="text-gray-400 font-bold uppercase tracking-widest text-[11px] mt-2 italic">Rank: Master Quester</p>
+                        
+                        <div className="grid grid-cols-3 gap-6 mt-12">
+                            <div className="p-6 bg-gray-50 rounded-3xl">
+                                <span className="block text-2xl font-black text-black">24</span>
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Quests Finished</span>
+                            </div>
+                            <div className="p-6 bg-gray-50 rounded-3xl">
+                                <span className="block text-2xl font-black text-black">4.9</span>
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Rating</span>
+                            </div>
+                            <div className="p-6 bg-gray-50 rounded-3xl">
+                                <span className="block text-2xl font-black text-black">$1.2k</span>
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Earned</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            // Re-run Lucide icons when components render
+            useEffect(() => {
+                if (window.lucide) window.lucide.createIcons();
             });
-            if (error) alert("Login Error: " + error.message);
-        });
 
-        document.getElementById('signupBtn').addEventListener('click', () => {
-            alert("Sign Up logic goes here or redirect to a signup page.");
-        });
+            return (
+                <div className="min-h-screen pb-20">
+                    <Navbar />
+
+                    <main className="pt-28 px-6 md:px-12 max-w-7xl mx-auto">
+                        {view === 'browse' && (
+                            <div className="fade-in">
+                                {/* Search & Filter Header */}
+                                <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+                                    <div className="max-w-xl flex-grow">
+                                        <h2 className="text-5xl font-black text-black tracking-tighter mb-6 leading-tight">
+                                            Find your next <br/><span className="text-gray-300">SideQuest.</span>
+                                        </h2>
+                                        <div className="relative group">
+                                            <input 
+                                                type="text" 
+                                                placeholder="Search for tasks (e.g. Graphic Design, Delivery...)" 
+                                                className="w-full h-16 bg-white border border-gray-100 rounded-2xl px-14 py-4 text-lg font-medium shadow-sm focus:ring-4 focus:ring-gray-50 outline-none transition"
+                                                value={searchQuery}
+                                                onChange={(e) => setSearchQuery(e.target.value)}
+                                            />
+                                            <i data-lucide="search" className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 w-6 h-6 group-focus-within:text-black transition"></i>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-3 overflow-x-auto pb-2 hide-scrollbar">
+                                        {['All', 'Delivery', 'Creative', 'Tech', 'Home'].map(cat => (
+                                            <button key={cat} className="whitespace-nowrap px-6 py-3 rounded-xl bg-white border border-gray-100 text-sm font-bold text-gray-600 hover:bg-black hover:text-white transition shadow-sm">
+                                                {cat}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Task Feed */}
+                                <div className="task-grid">
+                                    {tasks.filter(t => t.title.toLowerCase().includes(searchQuery.toLowerCase())).map(task => (
+                                        <TaskCard key={task.id} task={task} />
+                                    ))}
+                                    {/* Dummy data if no DB connected yet */}
+                                    {tasks.length === 0 && [1, 2, 3, 4, 5, 6].map(i => (
+                                        <TaskCard key={i} task={{id: i, title: "Help with Website Migration", description: "Need someone to help move a WordPress site to a new host and update DNS settings.", reward: 150, category: 'Tech'}} />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {view === 'post' && (
+                            <div className="max-w-2xl mx-auto bg-white p-10 rounded-[2.5rem] border border-gray-100 card-shadow fade-in mt-10">
+                                <h2 className="text-3xl font-black mb-8 text-black">Post a New Quest</h2>
+                                <div className="space-y-6">
+                                    <div>
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1 italic">Quest Title</label>
+                                        <input type="text" placeholder="What do you need help with?" className="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold focus:ring-2 focus:ring-black outline-none" />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1 italic">Reward ($)</label>
+                                            <input type="number" placeholder="0.00" className="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold focus:ring-2 focus:ring-black outline-none" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1 italic">Category</label>
+                                            <select className="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold focus:ring-2 focus:ring-black outline-none">
+                                                <option>Tech</option>
+                                                <option>Delivery</option>
+                                                <option>Creative</option>
+                                                <option>Home</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1 italic">Detailed Description</label>
+                                        <textarea rows="4" placeholder="Explain the quest requirements..." className="w-full p-4 bg-gray-50 border-none rounded-2xl font-bold focus:ring-2 focus:ring-black outline-none resize-none"></textarea>
+                                    </div>
+                                    <button className="w-full bg-black text-white py-5 rounded-2xl font-black text-lg hover:scale-[1.01] transition shadow-xl shadow-gray-100">
+                                        Launch Quest
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {view === 'profile' && <ProfileView />}
+                    </main>
+
+                    <ChatWindow />
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>
