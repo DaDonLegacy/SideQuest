@@ -2,8 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>SideQuest | Real Tasks. Real Rewards.</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="SideQuest">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="description" content="Pick up tasks near you and get paid. Post tasks and find help fast.">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -279,7 +288,16 @@ function App() {
     const fetchTasks = async () => {
         const { data, error } = await sb.from('tasks').select('*').order('created_at', { ascending: false });
         if (error) { console.error('fetchTasks error:', error); return; }
-        setTasks(data || []);
+        const taskList = data || [];
+        // Fetch all profiles for posters and merge
+        const userIds = [...new Set(taskList.map(t => t.user_id).filter(Boolean))];
+        if (userIds.length > 0) {
+            const { data: profiles } = await sb.from('profiles').select('id, username, full_name, avatar_seed').in('id', userIds);
+            const profileMap = {};
+            (profiles || []).forEach(p => { profileMap[p.id] = p; });
+            taskList.forEach(t => { t.poster = profileMap[t.user_id] || null; });
+        }
+        setTasks(taskList);
     };
 
     const handleSignup = async ({ email, password, username, full_name }) => {
@@ -314,9 +332,12 @@ function App() {
     const handleAccept = async task => {
         if (!user) { setModal('login'); return; }
         if (task.user_id === user.id) { alert("You can't accept your own task."); return; }
-        await sb.from('tasks').update({ status: 'taken', accepted_by: user.id }).eq('id', task.id);
+        const { error } = await sb.from('tasks').update({ status: 'taken', accepted_by: user.id }).eq('id', task.id);
+        if (error) { alert('Error accepting task: ' + error.message); return; }
         await fetchTasks();
-        setChat(task);
+        // Open chat with updated task info
+        const updatedTask = { ...task, status: 'taken', accepted_by: user.id };
+        setChat(updatedTask);
         setModal(null);
     };
 
@@ -452,14 +473,20 @@ function BrowseView({ tasks, search, setSearch, cat, setCat, user, setModal, set
                 ))}
             </div>
 
-            {/* Count */}
+            {/* Count + Post CTA */}
             <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.5rem' }}>
                 <p style={{ color:'#9ca3af', fontSize:'0.85rem', fontWeight:600 }}>
                     <span style={{ color:'#1a1a1a', fontWeight:900 }}>{tasks.length}</span> tasks available
                 </p>
-                <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-                    <div style={{ width:8, height:8, background:'#10b981', borderRadius:'50%', boxShadow:'0 0 6px #10b981' }}></div>
-                    <span style={{ fontSize:'11px', fontWeight:700, color:'#9ca3af' }}>Live</span>
+                <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+                    <button className="btn-black" style={{ fontSize:'0.82rem', padding:'0.7rem 1.4rem', borderRadius:'1rem', display:'flex', alignItems:'center', gap:6 }}
+                        onClick={() => { if(!user){setModal('login');return;} setView('post'); }}>
+                        ＋ Post a Task
+                    </button>
+                    <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+                        <div style={{ width:8, height:8, background:'#10b981', borderRadius:'50%', boxShadow:'0 0 6px #10b981' }}></div>
+                        <span style={{ fontSize:'11px', fontWeight:700, color:'#9ca3af' }}>Live</span>
+                    </div>
                 </div>
             </div>
 
@@ -512,9 +539,9 @@ function TaskCard({ task, user, onClick, onAccept, onComplete, onChat, style }) 
             </div>
             <div style={{ borderTop:'1px solid #f3f4f6', paddingTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                    <img src={avatarUrl(task.profiles?.avatar_seed||task.user_id)} width={32} height={32} style={{ borderRadius:8, border:'1px solid #e5e7eb' }} />
+                    <img src={avatarUrl(task.poster?.avatar_seed||task.user_id)} width={32} height={32} style={{ borderRadius:8, border:'1px solid #e5e7eb' }} />
                     <div>
-                        <div style={{ fontSize:'11px', fontWeight:900, lineHeight:1, marginBottom:2 }}>{task.profiles?.username||'user'}</div>
+                        <div style={{ fontSize:'11px', fontWeight:900, lineHeight:1, marginBottom:2 }}>{task.poster?.full_name||task.poster?.username||'User'}</div>
                         <div style={{ fontSize:'10px', color:'#ccc', fontWeight:600 }}>{ago(task.created_at)}</div>
                     </div>
                 </div>
@@ -541,6 +568,7 @@ function TaskCard({ task, user, onClick, onAccept, onComplete, onChat, style }) 
 function TaskDetailModal({ task, user, onClose, onAccept, onComplete, onChat, onReview }) {
     const isOwner  = user?.id === task.user_id;
     const isWorker = user?.id === task.accepted_by;
+    const poster   = task.poster;
     return (
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-box" onClick={e => e.stopPropagation()}>
@@ -560,24 +588,44 @@ function TaskDetailModal({ task, user, onClose, onAccept, onComplete, onChat, on
                     {task.location && <div style={{ background:'#f3f4f6', borderRadius:10, padding:'6px 12px', fontSize:'12px', fontWeight:700 }}>📍 {task.location}</div>}
                     <div style={{ background:'#f3f4f6', borderRadius:10, padding:'6px 12px', fontSize:'12px', fontWeight:700 }}>🕐 {ago(task.created_at)}</div>
                 </div>
+
+                {/* Poster info */}
                 <div style={{ display:'flex', alignItems:'center', gap:12, background:'#f8f8f8', borderRadius:16, padding:'1rem', marginBottom:'1.5rem' }}>
-                    <img src={avatarUrl(task.profiles?.avatar_seed||task.user_id)} width={42} height={42} style={{ borderRadius:10 }} />
+                    <img src={avatarUrl(poster?.avatar_seed || task.user_id)} width={42} height={42} style={{ borderRadius:10 }} />
                     <div>
-                        <div style={{ fontWeight:800, fontSize:'0.95rem' }}>{task.profiles?.full_name||task.profiles?.username||'User'}</div>
-                        <div style={{ color:'#9ca3af', fontSize:'12px', fontWeight:600 }}>@{task.profiles?.username}</div>
+                        <div style={{ fontWeight:800, fontSize:'0.95rem' }}>{poster?.full_name || poster?.username || 'SideQuest User'}</div>
+                        <div style={{ color:'#9ca3af', fontSize:'12px', fontWeight:600 }}>@{poster?.username || '...'}</div>
                     </div>
+                    {isOwner && <span style={{ marginLeft:'auto', fontSize:'10px', fontWeight:900, color:'#9ca3af', textTransform:'uppercase', letterSpacing:'0.1em' }}>Your Task</span>}
                 </div>
+
+                {/* Action buttons */}
                 <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
-                    {task.status==='open' && !isOwner && (
-                        <button className="btn-black" onClick={() => onAccept(task)}>✅ Accept This Task</button>
+                    {/* Not logged in */}
+                    {!user && (
+                        <button className="btn-black" onClick={onClose}>Log in to Accept</button>
                     )}
-                    {(task.status==='taken'||task.status==='done') && (isOwner||isWorker) && (
+                    {/* Open task - not owner */}
+                    {user && task.status==='open' && !isOwner && (
+                        <>
+                            <button className="btn-black" onClick={() => onAccept(task)}>✅ Accept Task — ${task.reward}</button>
+                            <button className="btn-outline" onClick={() => onChat(task)}>💬 Ask a Question</button>
+                        </>
+                    )}
+                    {/* Taken or done - participants can chat */}
+                    {user && (task.status==='taken' || task.status==='done') && (isOwner || isWorker) && (
                         <button className="btn-outline" onClick={() => onChat(task)}>💬 Open Chat</button>
                     )}
-                    {task.status==='taken' && isOwner && (
-                        <button className="btn-black btn-sm" onClick={() => onComplete(task.id)}>Mark as Done</button>
+                    {/* Owner can mark done */}
+                    {user && task.status==='taken' && isOwner && (
+                        <button className="btn-black" onClick={() => { onComplete(task.id); onClose(); }}>✅ Mark as Done</button>
                     )}
-                    {task.status==='done' && (isOwner||isWorker) && (
+                    {/* Worker can also mark done */}
+                    {user && task.status==='taken' && isWorker && (
+                        <button className="btn-black" onClick={() => { onComplete(task.id); onClose(); }}>✅ Mark as Completed</button>
+                    )}
+                    {/* Both can review when done */}
+                    {user && task.status==='done' && (isOwner || isWorker) && (
                         <button className="btn-outline" onClick={onReview}>⭐ Leave Review</button>
                     )}
                     <button className="btn-outline" onClick={onClose}>Close</button>
@@ -909,6 +957,15 @@ function AuthModal({ mode, onLogin, onSignup, onGoogle, onClose, error, setError
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('SW registered'))
+        .catch(err => console.log('SW failed:', err));
+    });
+  }
 </script>
 </body>
 </html>
