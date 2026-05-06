@@ -414,7 +414,7 @@ function App() {
 
             {/* ── MAIN ── */}
             <main style={{ paddingTop:72, maxWidth:1400, margin:'0 auto', padding:'72px 2rem 6rem' }}>
-                {view === 'browse'   && <BrowseView tasks={filtered} search={search} setSearch={setSearch} cat={cat} setCat={setCat} user={user} setModal={setModal} setChat={setChat} handleAccept={handleAccept} handleComplete={handleComplete} fetchTasks={fetchTasks} />}
+                {view === 'browse'   && <BrowseView tasks={filtered} search={search} setSearch={setSearch} cat={cat} setCat={setCat} user={user} setModal={setModal} setView={setView} setChat={setChat} handleAccept={handleAccept} handleComplete={handleComplete} fetchTasks={fetchTasks} />}
                 {view === 'post'     && <PostView onSubmit={handlePostTask} />}
                 {view === 'my-tasks' && <MyTasksView user={user} tasks={tasks} setModal={setModal} handleComplete={handleComplete} setChat={setChat} fetchTasks={fetchTasks} />}
                 {view === 'profile'  && <ProfileView user={user} profile={profile} setProfile={setProfile} tasks={tasks} onSignOut={handleSignOut} />}
@@ -448,7 +448,7 @@ function App() {
 }
 
 // ── BROWSE ────────────────────────────────────────────────────────────────────
-function BrowseView({ tasks, search, setSearch, cat, setCat, user, setModal, setChat, handleAccept, handleComplete, fetchTasks }) {
+function BrowseView({ tasks, search, setSearch, cat, setCat, user, setModal, setView, setChat, handleAccept, handleComplete, fetchTasks }) {
     return (
         <div>
             {/* Hero */}
