@@ -277,7 +277,8 @@ function App() {
     };
 
     const fetchTasks = async () => {
-        const { data } = await sb.from('tasks').select('*, profiles(username, avatar_seed, full_name)').order('created_at', { ascending: false });
+        const { data, error } = await sb.from('tasks').select('*').order('created_at', { ascending: false });
+        if (error) { console.error('fetchTasks error:', error); return; }
         setTasks(data || []);
     };
 
@@ -304,16 +305,7 @@ function App() {
 
     const handlePostTask = async form => {
         if (!user) { setModal('login'); return; }
-        const { error } = await sb.from('tasks').insert({ 
-            title: form.title, 
-            description: form.description, 
-            reward: parseFloat(form.reward), 
-            category: form.category, 
-            location: form.location, 
-            user_id: user.id, // REQUIRED: Links task to your account
-            status: 'open',   // REQUIRED: Ensures it appears in the feed
-            created_at: new Date().toISOString() 
-        });
+        const { error } = await sb.from('tasks').insert({ title: form.title, description: form.description, reward: parseFloat(form.reward), category: form.category, location: form.location, user_id: user.id, status: 'open', created_at: new Date().toISOString() });
         if (error) { alert('Error: ' + error.message); return; }
         await fetchTasks();
         setView('browse');
