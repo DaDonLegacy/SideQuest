@@ -473,20 +473,22 @@ function BrowseView({ tasks, search, setSearch, cat, setCat, user, setModal, set
                 ))}
             </div>
 
-            {/* Count + Post CTA */}
+            {/* Post CTA — centered under search */}
+            <div style={{ textAlign:'center', marginBottom:'1.5rem' }}>
+                <button className="btn-black" style={{ fontSize:'0.92rem', padding:'0.85rem 2.5rem', borderRadius:'1.25rem', display:'inline-flex', alignItems:'center', gap:8 }}
+                    onClick={() => { if(!user){setModal('login');return;} setView('post'); }}>
+                    ＋ Post a Task
+                </button>
+            </div>
+
+            {/* Count + Live */}
             <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.5rem' }}>
                 <p style={{ color:'#9ca3af', fontSize:'0.85rem', fontWeight:600 }}>
                     <span style={{ color:'#1a1a1a', fontWeight:900 }}>{tasks.length}</span> tasks available
                 </p>
-                <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-                    <button className="btn-black" style={{ fontSize:'0.82rem', padding:'0.7rem 1.4rem', borderRadius:'1rem', display:'flex', alignItems:'center', gap:6 }}
-                        onClick={() => { if(!user){setModal('login');return;} setView('post'); }}>
-                        ＋ Post a Task
-                    </button>
-                    <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-                        <div style={{ width:8, height:8, background:'#10b981', borderRadius:'50%', boxShadow:'0 0 6px #10b981' }}></div>
-                        <span style={{ fontSize:'11px', fontWeight:700, color:'#9ca3af' }}>Live</span>
-                    </div>
+                <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+                    <div style={{ width:8, height:8, background:'#10b981', borderRadius:'50%', boxShadow:'0 0 6px #10b981' }}></div>
+                    <span style={{ fontSize:'11px', fontWeight:700, color:'#9ca3af' }}>Live</span>
                 </div>
             </div>
 
