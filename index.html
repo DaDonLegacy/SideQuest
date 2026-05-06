@@ -399,13 +399,9 @@ function App() {
                         </>
                     ) : (
                         <>
-                            <div style={{ textAlign:'right' }}>
-                                <div style={{ fontSize:'12px', fontWeight:900, lineHeight:1 }}>{profile?.full_name || profile?.username}</div>
-                                <span className="badge-verified" style={{ marginTop:3, display:'inline-block' }}>Verified</span>
-                            </div>
-                            <button onClick={() => setView('profile')} style={{ background:'none', border:'none', cursor:'pointer', position:'relative' }}>
-                                <img src={avatarUrl(profile?.avatar_seed || user.id)} width={44} height={44} style={{ borderRadius:12, border:'2px solid #fff', boxShadow:'0 2px 10px rgba(0,0,0,0.1)' }} />
-                                <div style={{ position:'absolute', top:-2, right:-2, width:12, height:12, background:'#10b981', border:'2px solid #fff', borderRadius:'50%' }}></div>
+                            <button onClick={() => setView('profile')} style={{ background:'none', border:'none', cursor:'pointer', textAlign:'right', display:'flex', flexDirection:'column', alignItems:'flex-end', gap:4 }}>
+                                <div style={{ fontSize:'13px', fontWeight:900, lineHeight:1, color:'#1a1a1a' }}>{profile?.full_name || profile?.username}</div>
+                                <span className="badge-verified">Verified</span>
                             </button>
                         </>
                     )}
@@ -475,10 +471,11 @@ function BrowseView({ tasks, search, setSearch, cat, setCat, user, setModal, set
 
             {/* Post CTA — centered under search */}
             <div style={{ textAlign:'center', marginBottom:'1.5rem' }}>
-                <button className="btn-black" style={{ fontSize:'0.92rem', padding:'0.85rem 2.5rem', borderRadius:'1.25rem', display:'inline-flex', alignItems:'center', gap:8 }}
-                    onClick={() => { if(!user){setModal('login');return;} setView('post'); }}>
-                    ＋ Post a Task
-                </button>
+                <span
+                    onMouseDown={() => { if(!user){ setModal('login'); return; } setView('post'); }}
+                    style={{ display:'inline-flex', alignItems:'center', gap:8, background:'#000', color:'#fff', fontSize:'0.92rem', fontWeight:800, padding:'0.85rem 2.5rem', borderRadius:'1.25rem', cursor:'pointer', userSelect:'none' }}>
+                    + Post a Task
+                </span>
             </div>
 
             {/* Count + Live */}
